@@ -50,7 +50,7 @@ public class MainActivity extends FragmentActivity {
 		setContentView(R.layout.activity_main);
 		setUpMapIfNeeded();
 	}
-	
+
 	// Set up map when needed
 	private void setUpMapIfNeeded() {
 		// Check if Google map is initiated
@@ -62,38 +62,42 @@ public class MainActivity extends FragmentActivity {
 			}
 		}
 	}
-	
+
 	private void setUpMap() {
 		// Enable MyLocation Layer
 		googleMap.setMyLocationEnabled(true);
-		
+
 		// Get LocationManager
 		LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-		
+
 		// Create Criteria object to retrieve provider and find best provider
 		Criteria criteria = new Criteria();
 		String provider = locationManager.getBestProvider(criteria, true);
-		
+
 		// Get current location
 		Location myLocation = locationManager.getLastKnownLocation(provider);
-		
-		// Set map type to normal
-		//googleMap.setMapType(GoogleMap.MAP_TYPE_NONE);
-		
-		// Get latitude and longitutde of location and create a LatLng
-		double latitude = myLocation.getLatitude();
-		double longitude = myLocation.getLongitude();
-		
+
+		// Error handling for if app cannot find current location
+		if (myLocation == null) {
+			Toast.makeText(this, "Not Connected to Current Location", Toast.LENGTH_SHORT).show();
+		}
+		// find current location if myLocation is not null
+		else {
+			// Get latitude and longitutde of location and create a LatLng
+			double latitude = myLocation.getLatitude();
+			double longitude = myLocation.getLongitude();
+			LatLng latLng = new LatLng(latitude, longitude);
+			
+			// Show current location in map, zoom appropriately, and place marker
+			googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+			googleMap.animateCamera(CameraUpdateFactory.zoomTo(10));
+			googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("EDIT THIS WITH ADDRESS"));
+		}
+
 		/*
 		double latitude = 39.9539;
-		double longitude = 75.1930;*/
-		
-		LatLng latLng = new LatLng(latitude, longitude);
-		
-		// Show current location in map, zoom appropriately, and place marker
-		googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-		googleMap.animateCamera(CameraUpdateFactory.zoomTo(10));
-		googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("EDIT THIS WITH ADDRESS"));
+		double longitude = -75.1930;*/
+
 	}
 
 	@Override
