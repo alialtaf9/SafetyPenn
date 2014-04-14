@@ -17,6 +17,7 @@ for item in domain:
 
 @app.route('/')
 def home():
+  print "home request"
   if 'user' in session:
     return render_template('home.html', coordinates=coordinates, coordinates_json=json.dumps(coordinates))
   return redirect(url_for('login'))
@@ -63,6 +64,7 @@ def login():
 def logout():
   # remove the username from the session if it's there
   session.pop('username', None)
+  session.clear()
   return redirect('/login')
 
 # set the secret key.  keep this really secret:

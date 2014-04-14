@@ -18,6 +18,7 @@
       }
     </style>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+
     <script>
       var map;
       var markers = [];
@@ -50,6 +51,13 @@
           location.reload();
           console.log('request made')
         });
+        console.log("hello");
+        function refresh() {
+          location.reload();
+          console.log("fucking work");
+          setTimeout(refresh, 10000);
+        }
+        setTimeout(refresh, 15000);
       });
     </script>
 
