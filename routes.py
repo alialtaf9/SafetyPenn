@@ -21,7 +21,7 @@ def home():
     return render_template('home.html', coordinates=coordinates, coordinates_json=json.dumps(coordinates))
   return redirect(url_for('login'))
 
-@app.route('/add')
+@app.route('/add', methods=['POST'])
 def add_notification():
   print 'adding new timer'
   lat = request.args.get('lat', '')
