@@ -24,12 +24,13 @@ def home():
 
 @app.route('/add', methods=['POST'])
 def add_notification():
-  print 'adding new timer'
-  lat = request.args.get('lat', '')
-  longitude = request.args.get('long', '')
-  message = request.args.get('message', '')
-  timer_id = request.args.get('id', '')
+  print '******* new marker *******'
+  message = request.form['message']
+  lat = request.form['lat']
+  longitude = request.form['long']
+  timer_id = request.form['id']
   new_coordinate = [lat, longitude, message, timer_id]
+  print new_coordinate
   coordinates.append(new_coordinate)
   return redirect(url_for('home'))
 
