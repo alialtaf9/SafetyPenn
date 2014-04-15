@@ -9,7 +9,7 @@ app = Flask(__name__)
 # add requirements to a textfile
 print os.environ
 sdb = boto.connect_sdb('AKIAJVR3X6XLBLMWPSCA', '9InSK9q4gzUhqFVOUPQmhY6adZQ9Jt7x0XonJlnf')
-domain = sdb.get_domain('notifications')
+domain = sdb.get_domain('members')
 coordinates = []
 for item in domain:
   coordinate = [item['latitude'], item['longitude'], item['message'], item['timer_id']]
@@ -25,14 +25,15 @@ def home():
 
 @app.route('/add', methods=['POST'])
 def add_notification():
-  print '******* new marker *******'
-  message = request.form['message']
-  lat = request.form['lat']
-  longitude = request.form['long']
-  timer_id = request.form['id']
-  new_coordinate = [lat, longitude, message, timer_id]
-  print new_coordinate
-  coordinates.append(new_coordinate)
+  # print '******* new marker *******'
+  # message = request.form['message']
+  # lat = request.form['lat']
+  # longitude = request.form['long']
+  # timer_id = request.form['id']
+  # new_coordinate = [lat, longitude, message, timer_id]
+  # print new_coordinate
+  # coordinates.append(new_coordinate)
+  print '********* POST REQUEST RECEIVED ************'
   return redirect(url_for('home'))
 
 @app.route('/remove')
