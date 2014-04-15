@@ -12,7 +12,7 @@
         <LinearLayout android:id="@+id/header"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/maroon"
+                android:background="#ffffff"
                 android:paddingTop="5dip"
                 android:paddingBottom="5dip">
                 <!-- Logo Start -->
@@ -63,18 +63,17 @@
           <Button android:id="@+id/btnLogin"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dip"
                 android:text="Login"/>
           <!-- Link to Registration Screen -->
           <TextView android:id="@+id/register_link"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="40dip"
-                android:layout_marginBottom="40dip"
-                android:text="New to Safety Penn? Register here."
+                android:layout_marginTop="20dip"
+                android:layout_marginBottom="20dip"
+                android:text="New to SafetyPenn? Register here."
                 android:gravity="center"
-                android:textSize="20dip"
-                android:textColor="@color/maroon"/>
+                android:textSize="17dip"
+                android:textColor="#7a0029"/>
         </LinearLayout>
         <!-- Login Form Ends -->
   </RelativeLayout>

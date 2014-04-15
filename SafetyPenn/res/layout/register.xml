@@ -12,7 +12,7 @@
         <LinearLayout android:id="@+id/header"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/maroon"
+                android:background="#ffffff"
                 android:paddingTop="5dip"
                 android:paddingBottom="5dip">
                 <!-- Logo Start -->
@@ -36,6 +36,7 @@
                 android:textColor="#372c24"
                 android:text="Full Name"/>
           <EditText android:layout_width="fill_parent"
+              	android:id="@+id/registerName"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dip"
                 android:layout_marginBottom="20dip"
@@ -46,6 +47,7 @@
                 android:textColor="#372c24"
                 android:text="Email"/>
           <EditText android:layout_width="fill_parent"
+              	android:id="@+id/registerEmail"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dip"
                 android:layout_marginBottom="20dip"
@@ -56,26 +58,93 @@
                 android:textColor="#372c24"
                 android:text="Password"/>
           <EditText android:layout_width="fill_parent"
+              	android:id="@+id/registerPassword"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dip"
                 android:singleLine="true"
                 android:password="true"/>
+          <!--  Gender -->
+          <TextView android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#372c24"
+                android:text="Gender"/>
+          <Spinner
+		        android:id="@+id/genderspinner"
+		        android:layout_width="fill_parent"
+		        android:layout_marginTop="5dip"
+                android:layout_marginBottom="20dip"
+		        android:layout_height="wrap_content"/>
+
+          <!--  Eye Color -->
+          <!--
+          <TextView android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#372c24"
+                android:text="Eye Color"/>
+          <Spinner
+		        android:id="@+id/eyecolorspinner"
+		        android:layout_marginTop="5dip"
+                android:layout_marginBottom="20dip"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"/>
+		  -->
+          <!--  Hair Color -->
+          <!--
+          <TextView android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#372c24"
+                android:text="Hair Color"/>
+          <Spinner
+		        android:id="@+id/haircolorspinner"
+		        android:layout_marginTop="5dip"
+                android:layout_marginBottom="20dip"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"/>
+		  -->
+          <!--  Picture Upload -->
+          <ImageView
+		        android:id="@+id/uploadImage"
+		        android:layout_width="match_parent"
+		        android:layout_marginTop="5dip"
+		        android:layout_height="wrap_content"
+		        android:adjustViewBounds="true" />
+	      <Button
+		        android:id="@+id/selectImageButton"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_marginTop="15dp"
+		        android:background="@null"
+		        android:text="Select Image" />
+          <!--  Error message -->
+          <TextView android:id="@+id/register_error"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#e30000"
+                android:padding="10dip"
+                android:textStyle="bold"/>
+          <!--  Success message -->
+          <TextView android:id="@+id/register_success"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#458B00"
+                android:padding="10dip"
+                android:textStyle="bold"/>
           <!-- Login button -->
           <Button android:id="@+id/btnRegister"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dip"
                 android:text="Register Account"/>
           <!-- Link to Login Screen -->
           <TextView android:id="@+id/login_link"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="40dip"
-                android:layout_marginBottom="40dip"
+                android:layout_marginTop="20dip"
+                android:layout_marginBottom="20dip"
                 android:text="Already have an account? Login here."
                 android:gravity="center"
-                android:textSize="20dip"
-                android:textColor="@color/maroon"/>
+                android:textSize="17dip"
+                android:textColor="#7a0029"/>
+
         </LinearLayout>
         <!-- Login Form Ends -->
   </RelativeLayout>
