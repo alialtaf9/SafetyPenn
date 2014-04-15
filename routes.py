@@ -7,6 +7,7 @@ app = Flask(__name__)
 
 #eventually change this to use os for the sake of security
 # add requirements to a textfile
+print os.environ
 sdb = boto.connect_sdb('AKIAJVR3X6XLBLMWPSCA', '9InSK9q4gzUhqFVOUPQmhY6adZQ9Jt7x0XonJlnf')
 domain = sdb.get_domain('notifications')
 coordinates = []
