@@ -7,8 +7,7 @@ app = Flask(__name__)
 
 #eventually change this to use os for the sake of security
 # add requirements to a textfile
-print os.environ
-sdb = boto.connect_sdb(ENV['AWS_ACCESS_KEY_ID'], ENV['AWS_SECRET_ACCESS_KEY'])
+sdb = boto.connect_sdb(os.environ['AWS_ACCESS_KEY_ID'], os.environ['AWS_SECRET_ACCESS_KEY'])
 domain = sdb.get_domain('members')
 coordinates = []
 for item in domain:
