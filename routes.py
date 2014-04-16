@@ -32,9 +32,7 @@ def add_notification():
   # new_coordinate = [lat, longitude, message, timer_id]
   # print new_coordinate
   # coordinates.append(new_coordinate)
-  print '********************************************'
-  print '********* POST REQUEST RECEIVED ************'
-  print '********************************************'
+  print '\n********************************************\n********* POST REQUEST RECEIVED ************\n********************************************\n'
   return redirect(url_for('home'))
 
 @app.route('/remove')
