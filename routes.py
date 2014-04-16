@@ -8,7 +8,7 @@ app = Flask(__name__)
 #eventually change this to use os for the sake of security
 # add requirements to a textfile
 print os.environ
-sdb = boto.connect_sdb('AKIAJVR3X6XLBLMWPSCA', '9InSK9q4gzUhqFVOUPQmhY6adZQ9Jt7x0XonJlnf')
+sdb = boto.connect_sdb(ENV['AWS_ACCESS_KEY_ID'], ENV['AWS_SECRET_ACCESS_KEY'])
 domain = sdb.get_domain('members')
 coordinates = []
 for item in domain:
@@ -33,7 +33,9 @@ def add_notification():
   # new_coordinate = [lat, longitude, message, timer_id]
   # print new_coordinate
   # coordinates.append(new_coordinate)
+  print '********************************************'
   print '********* POST REQUEST RECEIVED ************'
+  print '********************************************'
   return redirect(url_for('home'))
 
 @app.route('/remove')
