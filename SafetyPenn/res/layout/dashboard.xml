@@ -23,7 +23,7 @@
             android:layout_width="70dip"
             android:layout_height="70dip"
             android:layout_gravity="bottom|center"
-            android:layout_marginBottom="5dip"
+            android:layout_marginBottom="10dip"
             android:orientation="vertical" >
 
             <Button
@@ -33,8 +33,8 @@
                 android:background="@drawable/roundbackground"
                 android:gravity="center"
                 android:text="timer"
-                android:textColor="#000000"
-                android:textSize="18dip" />
+                android:textColor="#B0000000"
+                android:textSize="14dip" />
         </LinearLayout>
 
         <!-- Logout button -->
@@ -44,7 +44,7 @@
             android:layout_height="30dip"
             android:layout_gravity="bottom"
             android:gravity="center"
-            android:layout_marginBottom="19dip"
+            android:layout_marginBottom="25dip"
             android:orientation="vertical" >
 
             <Button
@@ -54,7 +54,7 @@
                 android:background="#d5ffffff"
                 android:gravity="center"
                 android:text="logout"
-                android:textColor="#555555"
+                android:textColor="#B0555555"
                 android:textSize="14dip" />
         </LinearLayout>
     </fragment>

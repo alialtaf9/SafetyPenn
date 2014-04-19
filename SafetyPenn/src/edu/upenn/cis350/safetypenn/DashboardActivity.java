@@ -21,9 +21,14 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -49,6 +54,7 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 	private double latitude;
 	private double longitude;
 	private int timerLength;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -94,7 +100,9 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 			btnTimer.setOnClickListener(new View.OnClickListener() {
 
 				public void onClick(View arg0) {
-					showTimerPopup(DashboardActivity.this);
+					//showTimerPopup(DashboardActivity.this);
+					registerForContextMenu(btnTimer);
+					openContextMenu(btnTimer);
 				}
 			});
 
@@ -108,6 +116,10 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 		}        
 	}
 
+	/******************************************
+	 * 			TIMER HANDLING
+	 ******************************************/
+	
 	private void showTimerPopup(final Activity context) {
 		int popupWidth = 480;
 		int popupHeight = 800;
@@ -178,6 +190,10 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 
 	}
 
+	/******************************************
+	 * 			MAP HANDLING
+	 ******************************************/
+	
 	// Set up map when needed
 	private void setUpMapIfNeeded() {
 		// Check if Google map is initiated
@@ -250,4 +266,41 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 		// TODO Auto-generated method stub
 
 	}
+
+
+	/******************************************
+	 * 			SELECTING WHICH TIMER
+	 * 					TO USE
+	 ******************************************/	
+	
+	// Floating menu for selecting timer
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.timer_select, menu);
+		menu.setHeaderTitle("Select Timer");
+	}
+	
+	// Delegate handling of each selection of menu
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+
+		switch (item.getItemId()) {
+
+		// Option 1: let Google Maps estimate time
+		case R.id.estimate_timer:
+		// to-do!
+		return true;
+
+		// Option 2: user sets custom timer
+		case R.id.user_set_timer:
+			// Display timer pop-up
+			showTimerPopup(DashboardActivity.this);
+			return true;
+		default:
+			return super.onContextItemSelected(item);
+		}
+	}
 }
+
+
