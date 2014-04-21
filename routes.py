@@ -8,42 +8,49 @@ app = Flask(__name__)
 #eventually change this to use os for the sake of security
 # add requirements to a textfile
 sdb = boto.connect_sdb(os.environ['AWS_ACCESS_KEY_ID'], os.environ['AWS_SECRET_ACCESS_KEY'])
-domain = sdb.get_domain('members')
-coordinates = []
-for item in domain:
-  coordinate = [item['latitude'], item['longitude'], item['message'], item['timer_id']]
-  coordinates.append(coordinate)
+members = sdb.get_domain('members')
+notifications = sdb.get_domain('notifications')
+members_list = {}
+notifications_list = []
 
+for item in members:
+  members_list[item.name] = {'name': item['name'], 'gender': item['gender'], 'height' : item['height'], 'weight' : item['weight'], 'eye_color' : item['eye_color'], 'hair_color' : item['hair_color'], 'picture' : item['picture']}
 
+for item in notifications:
+  notification = [item['latitude'], item['longitude'], members_list[item.name], item['message'], item.name]
+  notifications_list.append(notification)
 
-
+#check if logged in, redirect to homepage
 @app.route('/')
 def home():
-  print "home request"
   if 'user' in session:
-    return render_template('home.html', coordinates=coordinates, coordinates_json=json.dumps(coordinates))
+    return render_template('home.html', coordinates=notifications_list, coordinates_json=json.dumps(notifications_list))
   return redirect(url_for('login'))
 
-@app.route('/add', methods=['POST'])
+#when a user registers he is added to the db
+@app.route('/addmember', methods=['POST'])
+def add_member():
+  new_member = members.new_item(request.form['email'])
+  new_member['name'] = request.form['name']
+  new_member['gender'] = request.form['gender']
+  new_member['height'] = request.form['height']
+  new_member['weight'] = request.form['weight']
+  new_member['eye_color'] = request.form['eye_color']
+  new_member['hair_color'] = request.form['hair_color']
+  new_member['picture'] = request.form['picture']
+  new_member.save()
+  return redirect(url_for('home'))
+
+#when a timer goes off a notification is added to the database
+@app.route('/addnotification', methods=['POST'])
 def add_notification():
-  # print '******* new marker *******'
-  # message = request.form['message']
-  # lat = request.form['lat']
-  # longitude = request.form['long']
-  # timer_id = request.form['id']
-  # new_coordinate = [lat, longitude, message, timer_id]
-  # print new_coordinate
-  # coordinates.append(new_coordinate)
-  print request.form
-  print request.form['email']
-  print request.form['name']
-  print request.form['gender']
-  print request.form['height']
-  print request.form['weight']
-  print request.form['eye_color']
-  print request.form['hair_color']
-  print request.form['picture']
-  print '\n********************************************\n********* POST REQUEST RECEIVED ************\n********************************************\n'
+  new_notification = notifications.new_item(request.form['email'])
+  new_notification['latitude'] = request.form['latitude']
+  new_notification['longitude'] = request.form['longitude']
+  new_notification['message'] = "The timer has gone off! Please send help."
+  new_notification.save()
+  notification = [new_notification['latitude'], new_notification['longitude'], members_list[request.form['email']], new_notification['message'], request.form['email']]
+  notifications_list.append(notification)
   return redirect(url_for('home'))
 
 @app.route('/remove')
@@ -51,11 +58,10 @@ def remove_notification():
   print 'remove'
   id = request.args.get('id', '')
   print id
-  for coordinate in coordinates:
-    print coordinate[3]
-    if coordinate[3] == id:
-      print 'removes'
-      coordinates.remove(coordinate)
+  for notification in notifications_list:
+    if notification[4] == id:
+      notifications_list.remove(notification)
+  notifications.delete_item(notifications.get_item(id))
   return redirect(url_for('home'))
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -67,10 +73,8 @@ def login():
       session['user'] = username
       return redirect(url_for('home'))
     else:
-      print("login error")
       return render_template('login.html', loginError=True)
   else:
-    print("load login page")
     return render_template('login.html')
 
 @app.route('/logout')
