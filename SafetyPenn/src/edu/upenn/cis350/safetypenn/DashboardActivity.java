@@ -119,7 +119,7 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 	/******************************************
 	 * 			TIMER HANDLING
 	 ******************************************/
-	
+
 	private void showTimerPopup(final Activity context) {
 		int popupWidth = 480;
 		int popupHeight = 800;
@@ -136,7 +136,7 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 		popup.setBackgroundDrawable(new BitmapDrawable());
 		popup.showAtLocation(layout, Gravity.CENTER, 0, 0);
 		//Show timer
-		//To-do: Access database to get user preferences
+		// TODO: Access database to get user preferences
 		timerDisplay = (TextView) layout.findViewById(R.id.timer_display);
 		timerDisplay.setText(String.valueOf(startTime / 1000));
 		btnTimer = (Button) findViewById(R.id.btnTimer);
@@ -164,6 +164,7 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 			}
 		});
 	}
+	
 	//After timer goes off, this method is called
 	public void handleTimerCritical() {
 		System.out.println("Handle timer critical");
@@ -189,11 +190,45 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 		}
 
 	}
+	
+	// Set timer based on calculated time to destination
+	private void showDestinationPicker(final Activity context) {
+		LinearLayout viewGroup = (LinearLayout) context.findViewById(R.id.address_field);
+		LayoutInflater layoutInflater = (LayoutInflater) context
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View layout = layoutInflater.inflate(R.layout.address_field, viewGroup);
+		
+		popup = new PopupWindow(context);
+		popup.setContentView(layout);
+		
+		popup.setWidth(320);
+		popup.setHeight(50);
+		popup.setFocusable(true);
+		popup.setBackgroundDrawable(new BitmapDrawable());
+		popup.showAtLocation(layout, Gravity.TOP, 0, 100);
+		/*
+		//Show timer
+		// TODO: Access database to get user preferences
+		timerDisplay = (TextView) layout.findViewById(R.id.timer_display);
+		timerDisplay.setText(String.valueOf(startTime / 1000));
+		btnTimer = (Button) findViewById(R.id.btnTimer);
+		btnTimerStart = (Button) layout.findViewById(R.id.timer_button);
+		*/
+		// Show alert if no location is found
+		/*
+		if (latitude == null || longitude == null) {
+			
+		}
+		*/
+		// Drop pin on current location
+		//googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("Current Location"));
+		
+	}
 
 	/******************************************
 	 * 			MAP HANDLING
 	 ******************************************/
-	
+
 	// Set up map when needed
 	private void setUpMapIfNeeded() {
 		// Check if Google map is initiated
@@ -247,8 +282,6 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 			// Show current location in map, zoom appropriately, and place marker
 			googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 			googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-			//	googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("Current Location"));
-
 		}
 	}
 
@@ -272,14 +305,14 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 	 * 			SELECTING WHICH TIMER
 	 * 					TO USE
 	 ******************************************/	
-	
+
 	// Floating menu for selecting timer
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.timer_select, menu);
 		menu.setHeaderTitle("Select Timer");
 	}
-	
+
 	// Delegate handling of each selection of menu
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
@@ -289,9 +322,9 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 
 		// Option 1: let Google Maps estimate time
 		case R.id.estimate_timer:
-		// to-do!
-		return true;
-
+			showDestinationPicker(DashboardActivity.this);
+			return true;
+		
 		// Option 2: user sets custom timer
 		case R.id.user_set_timer:
 			// Display timer pop-up
