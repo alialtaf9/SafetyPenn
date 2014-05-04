@@ -1,6 +1,9 @@
 package edu.upenn.cis350.safetypenn;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,7 +18,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.Address;
 import android.location.Criteria;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -60,7 +65,7 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		/**
 		 * Dashboard Screen for the application
 		 * */       
@@ -165,7 +170,7 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 			}
 		});
 	}
-	
+
 	//After timer goes off, this method is called
 	public void handleTimerCritical() {
 		System.out.println("Handle timer critical");
@@ -191,7 +196,7 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 		}
 
 	}
-	
+
 	// Set timer based on calculated time to destination
 	private void showDestinationPicker(final Activity context) {
 		// show address fields
@@ -199,19 +204,38 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 		LinearLayout endAddrView = (LinearLayout) findViewById(R.id.endAddress_field);
 		startAddrView.setVisibility(View.VISIBLE);
 		endAddrView.setVisibility(View.VISIBLE);
-		
-		// drop draggable pin on user's current location
+
 		if (locationManager == null) {
-			Toast.makeText(this, "Could not find location! Please enter the address of your location.", Toast.LENGTH_LONG).show();
+			Toast.makeText(this, "Could not find current location! Please enter the address of your location.", Toast.LENGTH_LONG).show();
 		} else {
+			// drop draggable pin on user's current location
 			double pinLatitude = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLatitude();
 			double pinLongitude = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLongitude();
 			LatLng pinLatLng = new LatLng(pinLatitude, pinLongitude);
 			googleMap.addMarker(new MarkerOptions()
-										.position(pinLatLng)
-										.title("Current Location"));
+			.position(pinLatLng)
+			.title("Current Location"));
+
+			// create access for address fields
+			TextView startAddrTV = (TextView) findViewById(R.id.startAddress_text);
+			TextView endAddrTV = (TextView) findViewById(R.id.endAddress_text);
+			
+			// create Geocoder to find address info of current location
+			Geocoder gc = new Geocoder(context, Locale.getDefault());
+			List<Address> addresses = null;
+			try {
+				addresses = gc.getFromLocation(pinLatitude, pinLongitude, 1);
+			} catch (IOException e) {
+				Toast.makeText(this, "Could not find current location! Please enter the address of your location.", Toast.LENGTH_LONG).show();
+			}
+			if (addresses != null) {
+				// Find address info and set the start address text view
+				String address = addresses.get(0).getAddressLine(0);
+				String city = addresses.get(0).getAddressLine(1);
+				startAddrTV.setText(address + ", " + city);
+			}
 		}
-		
+
 	}
 
 	/******************************************
@@ -260,12 +284,12 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 		if (myLocation == null) {
 			Toast.makeText(this, "Not Connected to Current Location", Toast.LENGTH_SHORT).show();
 		} else {	
-			
+
 			// Get latitude and longitutde of location and create a LatLng
 			double latitude = myLocation.getLatitude();
 			double longitude = myLocation.getLongitude();
 			LatLng latLng = new LatLng(latitude, longitude);
-			
+
 			googleMap.setMyLocationEnabled(true);
 
 			// Show current location in map, zoom appropriately, and place marker
@@ -313,8 +337,8 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 		case R.id.estimate_timer:
 			showDestinationPicker(DashboardActivity.this);
 			return true;
-		
-		// Option 2: user sets custom timer
+
+			// Option 2: user sets custom timer
 		case R.id.user_set_timer:
 			// Display timer pop-up
 			showTimerPopup(DashboardActivity.this);
