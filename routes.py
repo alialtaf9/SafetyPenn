@@ -72,7 +72,7 @@ def add_notification():
     print "********** 7"
     location = "http://maps.google.com/?ie=UTF8&q=Emergency+Location@" + new_notification['latitude'] + "," + new_notification['longitude']
     print "********** 8"
-    client.messages.create(to="+12672374105", from_="+12674158806", body="SafetyPenn Alert! " + members_list[request.form['email']]['name'] + " is in trouble! You can find " + members_list[request.form['email']]['name'] + " here: " + location)
+    #client.messages.create(to="+12672374105", from_="+12674158806", body="SafetyPenn Alert! " + members_list[request.form['email']]['name'] + " is in trouble! You can find " + members_list[request.form['email']]['name'] + " here: " + location)
     print "********** 9"
   else:
     new_notification['message'] = "An escort has been requested"
