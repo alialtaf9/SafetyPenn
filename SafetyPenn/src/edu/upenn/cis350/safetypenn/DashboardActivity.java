@@ -21,6 +21,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Gravity;
@@ -54,11 +55,12 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 	private double latitude;
 	private double longitude;
 	private int timerLength;
+	private Location myLocation;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		
 		/**
 		 * Dashboard Screen for the application
 		 * */       
@@ -87,7 +89,6 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 			btnLogout.setOnClickListener(new View.OnClickListener() {
 
 				public void onClick(View arg0) {
-					// TODO Auto-generated method stub
 					userFunctions.logoutUser(getApplicationContext());
 					Intent login = new Intent(getApplicationContext(), LoginActivity.class);
 					login.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -193,35 +194,23 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 	
 	// Set timer based on calculated time to destination
 	private void showDestinationPicker(final Activity context) {
-		LinearLayout viewGroup = (LinearLayout) context.findViewById(R.id.address_field);
-		LayoutInflater layoutInflater = (LayoutInflater) context
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View layout = layoutInflater.inflate(R.layout.address_field, viewGroup);
+		// show address fields
+		LinearLayout startAddrView = (LinearLayout) findViewById(R.id.startAddress_field);
+		LinearLayout endAddrView = (LinearLayout) findViewById(R.id.endAddress_field);
+		startAddrView.setVisibility(View.VISIBLE);
+		endAddrView.setVisibility(View.VISIBLE);
 		
-		popup = new PopupWindow(context);
-		popup.setContentView(layout);
-		
-		popup.setWidth(320);
-		popup.setHeight(50);
-		popup.setFocusable(true);
-		popup.setBackgroundDrawable(new BitmapDrawable());
-		popup.showAtLocation(layout, Gravity.TOP, 0, 100);
-		/*
-		//Show timer
-		// TODO: Access database to get user preferences
-		timerDisplay = (TextView) layout.findViewById(R.id.timer_display);
-		timerDisplay.setText(String.valueOf(startTime / 1000));
-		btnTimer = (Button) findViewById(R.id.btnTimer);
-		btnTimerStart = (Button) layout.findViewById(R.id.timer_button);
-		*/
-		// Show alert if no location is found
-		/*
-		if (latitude == null || longitude == null) {
-			
+		// drop draggable pin on user's current location
+		if (locationManager == null) {
+			Toast.makeText(this, "Could not find location! Please enter the address of your location.", Toast.LENGTH_LONG).show();
+		} else {
+			double pinLatitude = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLatitude();
+			double pinLongitude = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLongitude();
+			LatLng pinLatLng = new LatLng(pinLatitude, pinLongitude);
+			googleMap.addMarker(new MarkerOptions()
+										.position(pinLatLng)
+										.title("Current Location"));
 		}
-		*/
-		// Drop pin on current location
-		//googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("Current Location"));
 		
 	}
 
@@ -258,26 +247,26 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 400, 1000, this);     
 
-		// see if map has gps enabled
+		// checking for enabled gps
 		if (locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER) == null) {
 			Toast.makeText(this, "Not Connected to Current Location", Toast.LENGTH_SHORT).show();
-		}
+		} 
 	}
 
 	//}
 
 	@Override
 	public void onLocationChanged(Location myLocation) {
-		System.out.println("Location changed happened");
-
 		if (myLocation == null) {
 			Toast.makeText(this, "Not Connected to Current Location", Toast.LENGTH_SHORT).show();
-		} else {
-
+		} else {	
+			
 			// Get latitude and longitutde of location and create a LatLng
 			double latitude = myLocation.getLatitude();
 			double longitude = myLocation.getLongitude();
 			LatLng latLng = new LatLng(latitude, longitude);
+			
+			googleMap.setMyLocationEnabled(true);
 
 			// Show current location in map, zoom appropriately, and place marker
 			googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
