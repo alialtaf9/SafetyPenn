@@ -42,6 +42,7 @@
         });
         google.maps.event.addListener(infoWindow,'closeclick',function(){
           map.panTo(new google.maps.LatLng(39.95089, -75.20198));
+          map.setZoom(14);
         });
         markers.push([m, coordinate[4]]);
       }

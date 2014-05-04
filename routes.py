@@ -8,12 +8,16 @@ app = Flask(__name__)
 
 #eventually change this to use os for the sake of security
 # add requirements to a textfile
-sdb = boto.connect_sdb(os.environ['AWS_ACCESS_KEY_ID'], os.environ['AWS_SECRET_ACCESS_KEY'])
+#sdb = boto.connect_sdb(os.environ['AWS_ACCESS_KEY_ID'], os.environ['AWS_SECRET_ACCESS_KEY'])
+client = TwilioRestClient('AC50b13c1520eb7ca26e4f990ac06c87c1', '172043bac8753857dbccd9a3bfcd53b8')
+sdb = boto.connect_sdb('AKIAJBNJELBDD3IWJ4WA', 'sgdE8okP2+u9tp1IFZlHaevDuScp4MfWy6glICkW')
 members = sdb.get_domain('members')
 notifications = sdb.get_domain('notifications')
 members_list = {}
 notifications_list = []
-client = TwilioRestClient(os.environ['TWILIO_KEY'], os.environ['TWILIO_SECRET'])
+#client = TwilioRestClient(os.environ['TWILIO_KEY'], os.environ['TWILIO_SECRET'])
+
+
 
 for item in members:
   members_list[item.name] = {'name': item['name'], 'gender': item['gender'], 'height' : item['height'], 'weight' : item['weight'], 'eye_color' : item['eye_color'], 'hair_color' : item['hair_color'], 'picture' : item['picture'], 'user_number' : item['user_number'], 'emergency_number' : item['emergency_number']}
