@@ -18,48 +18,87 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
+        <!-- Timer Estimate Popup -->
+
+        <LinearLayout
+            android:id="@+id/timerEst_popup"
+            android:layout_width="match_parent"
+            android:layout_height="150dip"
+            android:layout_marginTop="50dip"
+            android:background="#E0ffffff"
+            android:layout_gravity="bottom"
+            android:orientation="vertical"
+            android:visibility="gone" >
+
+            <TextView
+                android:id="@+id/timerHeader"
+                android:layout_width="fill_parent"
+                android:layout_height="35dip"
+                android:gravity="center_horizontal"
+                android:layout_gravity="top"
+                android:padding="10dip"
+                android:textColor="#000000"
+                android:textSize="14dip"
+                android:text="Estimated Time" />
+            
+            <TextView
+                android:id="@+id/timerEst_text"
+                android:layout_width="fill_parent"
+                android:layout_height="35dip"
+                android:gravity="center_horizontal"
+                android:textColor="#B0000000"
+                android:textSize="14dip"
+                android:text="Estimated Time" />
+        </LinearLayout>
+
         <!-- Address Fields -->
 
         <LinearLayout
             android:id="@+id/startAddress_field"
-            android:layout_width="200dip"
-            android:layout_height="30dip"
+            android:layout_width="250dip"
+            android:layout_height="35dip"
             android:layout_gravity="left|top"
             android:layout_marginTop="13dip"
-            android:background="#E0ffffff"
+            android:background="#00ffffff"
             android:orientation="horizontal"
             android:visibility="gone" >
 
-            <TextView
+            <EditText
                 android:id="@+id/startAddress_text"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
+                android:background="#E0ffffff"
                 android:gravity="center_vertical"
+                android:imeOptions="actionNext"
+                android:padding="4dip"
+                android:singleLine="true"
                 android:text="start address"
                 android:textColor="#B0000000"
-                android:textSize="14dip"
-                android:layout_marginLeft="3dip" />
+                android:textSize="14dip" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/endAddress_field"
-            android:layout_width="200dip"
-            android:layout_height="30dip"
+            android:layout_width="250dip"
+            android:layout_height="35dip"
             android:layout_gravity="left|top"
-            android:layout_marginTop="45dip"
-            android:background="#E0ffffff"
+            android:layout_marginTop="55dip"
+            android:background="#00ffffff"
             android:orientation="horizontal"
             android:visibility="gone" >
 
-            <TextView
+            <EditText
                 android:id="@+id/endAddress_text"
                 android:layout_width="fill_parent"
-                android:layout_height="30dip"
+                android:layout_height="fill_parent"
+                android:background="#E0ffffff"
                 android:gravity="center_vertical"
-                android:text="end address"
+                android:hint="@string/end_address_text"
+                android:imeOptions="actionDone"
+                android:padding="4dip"
+                android:singleLine="true"
                 android:textColor="#B0000000"
-                android:textSize="14dip"
-                android:layout_marginLeft="3dip" />
+                android:textSize="14dip" />
         </LinearLayout>
 
         <!-- Timer button -->

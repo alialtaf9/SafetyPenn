@@ -32,15 +32,20 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
 public class DashboardActivity extends FragmentActivity implements LocationListener, OnMarkerDragListener {
@@ -63,8 +68,8 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 	private double longitude;
 	private int timerLength;
 	private Location myLocation;
-	private TextView startAddrTV;
-	private TextView endAddrTV;
+	private EditText startAddrText;
+	private EditText endAddrText;
 	private Geocoder gc;
 
 	@Override
@@ -213,25 +218,26 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 		if (locationManager == null) {
 			Toast.makeText(this, "Could not find current location! Please enter the address of your location.", Toast.LENGTH_LONG).show();
 		} else {
-			Toast.makeText(this, "Drop pin to set start location.", Toast.LENGTH_LONG).show();
-			
+			Toast.makeText(this, "Move pin to set start location, or input address manually.", Toast.LENGTH_LONG).show();
+
 			// drop draggable pin on user's current location
 			double pinLatitude = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLatitude();
 			double pinLongitude = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLongitude();
 			LatLng pinLatLng = new LatLng(pinLatitude, pinLongitude);
 			googleMap.addMarker(new MarkerOptions()
-										.position(pinLatLng)
-										.title("Current Location")
-										.draggable(true));
-			
+			.position(pinLatLng)
+			.title("Current Location")
+			.draggable(true));
+
 			// zoom camera to pin location
 			googleMap.moveCamera(CameraUpdateFactory.newLatLng(pinLatLng));
 			googleMap.animateCamera(CameraUpdateFactory.zoomTo(16));
-			
+
 			// create access for address fields
-			startAddrTV = (TextView) findViewById(R.id.startAddress_text);
-			endAddrTV = (TextView) findViewById(R.id.endAddress_text);
-			
+			startAddrText = (EditText) findViewById(R.id.startAddress_text);
+			endAddrText = (EditText) findViewById(R.id.endAddress_text);
+
+
 			// create Geocoder to find address info of current location
 			gc = new Geocoder(context, Locale.getDefault());
 			List<Address> addresses = null;
@@ -244,10 +250,97 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 				// Find address info and set the start address text view
 				String address = addresses.get(0).getAddressLine(0);
 				String city = addresses.get(0).getAddressLine(1);
-				startAddrTV.setText(address + ", " + city);
+				startAddrText.setText(address + ", " + city);
 			}
+
+			// calculate time needed to get to destination
+			endAddrText.setOnEditorActionListener(new OnEditorActionListener() {
+				@Override
+				public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+					if (actionId == EditorInfo.IME_ACTION_DONE) {
+						setupEstimateTimer(context);
+
+					}	
+					return false;
+				}
+			});
 		}
 
+	}
+
+	private void setupEstimateTimer(final Activity context) {
+		// create Address classes from user input
+		List<Address> startAddr = null;
+		List<Address> endAddr = null;
+		try {
+			startAddr = gc.getFromLocationName(startAddrText.getText().toString(), 1);
+			endAddr = gc.getFromLocationName(endAddrText.getText().toString(), 1);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// convert addresses into lat/long
+		boolean startAddrValid = true;
+		boolean endAddrValid = true;
+		double startLat = 0;
+		double startLong = 0;
+		double endLat = 0;
+		double endLong = 0;
+		// find coordinates for start address
+		try {
+			if (startAddr != null && endAddr != null) {
+				startLat = startAddr.get(0).getLatitude();
+				startLong = startAddr.get(0).getLongitude();
+			}
+		} catch (IllegalStateException e) {
+			startAddrValid = false;
+			Toast.makeText(context, "Start address not valid! Please re-enter.", Toast.LENGTH_SHORT).show();
+		}
+
+		// find coordinates for end address
+		try {
+			endLat = endAddr.get(0).getLatitude();
+			endLong = endAddr.get(0).getLongitude();
+			System.out.println(endLat + ", " + endLong);
+		} catch (IllegalStateException e) {
+			endAddrValid = false;
+			Toast.makeText(context, "End address not valid! Please re-enter.", Toast.LENGTH_SHORT).show();
+		}
+
+		// set up timer with estimated time
+		if (startAddrValid && endAddrValid) {
+			// calculates distance in meters between two locations
+			float[] results = new float[10];
+			Location.distanceBetween(startLat, startLong, endLat, endLong, results);
+			int timeEstimate = ((int) (results[0]/1.39)) + 1;
+
+			// hide address fields
+			startAddrText.setVisibility(View.GONE);
+			endAddrText.setVisibility(View.GONE);
+			startAddrText.setFocusable(false);
+			endAddrText.setFocusable(false);
+
+			// create string to display in popup
+			StringBuilder popupMessage = new StringBuilder("Estimated time: ");
+			if (timeEstimate > 60) {
+				int minutes = timeEstimate / 60;
+				int seconds = timeEstimate % 60;
+				if (seconds == 0) {
+					popupMessage.append(minutes + " min");
+				} else {
+					popupMessage.append(minutes + " minutes, " + seconds + " seconds");
+				}
+			} else {
+				popupMessage.append(timeEstimate + " seconds");
+			}
+						
+			// add timer estimate to textview and make it visible
+			LinearLayout popupLL = (LinearLayout) findViewById(R.id.timerEst_popup);
+			TextView popupTV = (TextView) findViewById(R.id.timerEst_text);
+			popupTV.setText(popupMessage);
+			popupLL.setVisibility(View.VISIBLE);
+		}
 	}
 
 	/******************************************
@@ -269,10 +362,10 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 				// Show current location in map, zoom appropriately, and place marker
 				googleMap.moveCamera(CameraUpdateFactory.newLatLng(pennLatLng));
 				googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-				
+
 				// Set marker-drag listener
 				googleMap.setOnMarkerDragListener(this);
-				
+
 				setUpMap();
 			}
 		}
@@ -367,7 +460,7 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 	/*****************************************************
 	 * 			MAP MARKER DRAGLISTENER
 	 ****************************************************/
-	
+
 	@Override
 	public void onMarkerDrag(Marker arg0) {	}
 
@@ -375,7 +468,7 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 	public void onMarkerDragEnd(Marker arg0) {
 		double pinLatitude = arg0.getPosition().latitude;
 		double pinLongitude = arg0.getPosition().longitude;
-		
+
 		List<Address> addresses = null;
 		try {
 			addresses = gc.getFromLocation(pinLatitude, pinLongitude, 1);
@@ -386,7 +479,7 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 			// Find address info and set the start address text view
 			String address = addresses.get(0).getAddressLine(0);
 			String city = addresses.get(0).getAddressLine(1);
-			startAddrTV.setText(address + ", " + city);
+			startAddrText.setText(address + ", " + city);
 		}
 	}
 
