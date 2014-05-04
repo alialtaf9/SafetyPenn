@@ -93,7 +93,7 @@ def add_notification():
 def remove_notification():
   print 'remove'
   id = request.args.get('id', '')
-  print "id = " id
+  print "id = " + id
   for notification in notifications_list:
     if notification[4] == id:
       print "found notification"
