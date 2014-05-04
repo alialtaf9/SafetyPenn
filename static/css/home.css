@@ -1,0 +1,14 @@
+html, body, #container {
+  height: 100%;
+}
+
+#map-canvas {
+  width: 74%;
+  height: 100%;
+  float: left;
+}
+
+#notifications-container {
+  width: 25%;
+  float: right;
+}

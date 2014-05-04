@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, session, url_for
+from twilio.rest import TwilioRestClient
 import boto
 import json
 import os
@@ -12,12 +13,19 @@ members = sdb.get_domain('members')
 notifications = sdb.get_domain('notifications')
 members_list = {}
 notifications_list = []
+client = TwilioRestClient(os.environ['TWILIO_KEY'], os.environ['TWILIO_SECRET'])
 
 for item in members:
-  members_list[item.name] = {'name': item['name'], 'gender': item['gender'], 'height' : item['height'], 'weight' : item['weight'], 'eye_color' : item['eye_color'], 'hair_color' : item['hair_color'], 'picture' : item['picture']}
+  members_list[item.name] = {'name': item['name'], 'gender': item['gender'], 'height' : item['height'], 'weight' : item['weight'], 'eye_color' : item['eye_color'], 'hair_color' : item['hair_color'], 'picture' : item['picture'], 'user_number' : item['user_number'], 'emergency_number' : item['emergency_number']}
 
 for item in notifications:
-  notification = [item['latitude'], item['longitude'], members_list[item.name], item['message'], item.name]
+  message = ''
+  if item['type'] == 'timer':
+    message = 'A timer has gone off!'
+  else:
+    message = 'An escort has been requested.'
+
+  notification = [item['latitude'], item['longitude'], members_list[item.name], message, item.name, item['type']]
   notifications_list.append(notification)
 
 #check if logged in, redirect to homepage
@@ -38,7 +46,10 @@ def add_member():
   new_member['eye_color'] = request.form['eye_color']
   new_member['hair_color'] = request.form['hair_color']
   new_member['picture'] = request.form['picture']
+  new_member['user_number'] = request.form['user_number']
+  new_member['emergency_number'] = request.form['emergency_number']
   new_member.save()
+  members_list[request.form['email']] = {'name': request.form['name'], 'gender': request.form['gender'], 'height' : request.form['height'], 'weight' : request.form['weight'], 'eye_color' : request.form['eye_color'], 'hair_color' : request.form['hair_color'], 'picture' : request.form['picture'], 'user_number': request.form['user_number'], 'emergency_number': request.form['emergency_number']}
   return redirect(url_for('home'))
 
 #when a timer goes off a notification is added to the database
@@ -47,9 +58,15 @@ def add_notification():
   new_notification = notifications.new_item(request.form['email'])
   new_notification['latitude'] = request.form['latitude']
   new_notification['longitude'] = request.form['longitude']
-  new_notification['message'] = "The timer has gone off! Please send help."
+  new_notification['type'] = request.form['type']
+  if request.form['type'] == 'timer':
+    new_notification['message'] = "A timer has gone off!"
+    location = "http://maps.google.com/?ie=UTF8&q=Emergency+Location@" + new_notification['latitude'] + "," + new_notification['longitude']
+    client.messages.create(to="+12672374105", from_="+12674158806", body="SafetyPenn Alert! " + members_list[request.form['email']]['name'] + " is in trouble! You can find " + members_list[request.form['email']]['name'] + " here: " + location)
+  else:
+    new_notification['message'] = "An escort has been requested"
   new_notification.save()
-  notification = [new_notification['latitude'], new_notification['longitude'], members_list[request.form['email']], new_notification['message'], request.form['email']]
+  notification = [new_notification['latitude'], new_notification['longitude'], members_list[request.form['email']], new_notification['message'], request.form['type']]
   notifications_list.append(notification)
   return redirect(url_for('home'))
 
@@ -60,6 +77,8 @@ def remove_notification():
   print id
   for notification in notifications_list:
     if notification[4] == id:
+      if notification[5] == 'escort':
+        client.messages.create(to=members_list[notification[4]]['user_number'], from_="+12674158806", body="An escort has been sent to your location")
       notifications_list.remove(notification)
   notifications.delete_item(notifications.get_item(id))
   return redirect(url_for('home'))
