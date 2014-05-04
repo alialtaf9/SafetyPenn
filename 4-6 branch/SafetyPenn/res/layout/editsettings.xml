@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:fillViewport="true">
+  <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" android:background="#ffffff">
+ 
+        <!--  Header  Starts-->
+        <LinearLayout android:id="@+id/header"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="#ffffff"
+                android:paddingTop="5dip"
+                android:paddingBottom="5dip">
+                <!-- Logo Start -->
+                <ImageView android:src="@drawable/logo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dip"/>
+                <!--  Logo Ends -->
+        </LinearLayout>
+        <!--  Header Ends -->
+        <!-- Login Form -->
+        <LinearLayout
+          android:orientation="vertical"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:padding="10dip"
+          android:layout_below="@id/header">
+          
+          <Button
+              android:id="@+id/returnToMainScreenButton"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginBottom="30dp"
+              android:layout_marginTop="15dp"
+              android:text="Return to Main Screen" />
+          
+          <!--  Password Label -->
+          <TextView android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#372c24"
+                android:text="Password"/>
+          <EditText android:layout_width="fill_parent"
+              	android:id="@+id/editPassword"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dip"
+                android:singleLine="true"
+                android:password="true"/>
+          <Button
+              android:id="@+id/updatePasswordButton"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginBottom="30dp"
+              android:layout_marginTop="15dp"
+              android:text="Update Password" />
+          
+          <!--  Emergency Contact -->
+          <TextView android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#372c24"
+                android:text="Emergency Contact Phone Number"/>
+
+          <EditText
+              android:id="@+id/emergencycontact"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="5dip"
+              android:inputType="number"
+              android:singleLine="true" />
+
+          <Button
+              android:id="@+id/updateEmergencyContactButton"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginBottom="30dp"
+              android:layout_marginTop="15dp"
+              android:text="Update Emergency Contact" />
+          
+          <Button
+		        android:id="@+id/selectImageButton"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_marginTop="15dp"
+		        android:text="Choose New Profile Photo" />
+	      <ImageView
+		        android:id="@+id/uploadImage"
+		        android:layout_width="match_parent"
+		        android:layout_marginTop="5dip"
+		        android:layout_height="wrap_content"
+		        android:adjustViewBounds="true" />
+	      <Button
+		        android:id="@+id/updateImageButton"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_marginTop="15dp"
+		        android:text="Update Profile Photo" />
+          
+          
+          
+        </LinearLayout>
+        <!-- Login Form Ends -->
+  </RelativeLayout>
+</ScrollView>

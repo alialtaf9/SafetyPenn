@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/user_set_timer"
+          android:title="@string/user_set_timer" />
+    <item android:id="@+id/estimate_timer"
+          android:title="@string/estimate_timer" />
+</menu>

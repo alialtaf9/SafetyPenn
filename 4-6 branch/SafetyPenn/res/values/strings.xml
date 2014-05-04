@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">SafetyPenn</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="estimate_timer">Estimate from Destination</string>
+    <string name="user_set_timer">Set Manually</string>
+    <string name="end_address_text">Enter Destination</string>
+
+</resources>
