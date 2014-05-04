@@ -76,7 +76,7 @@ def add_notification():
     print "********** 8"
     bod = "SafetyPenn Alert! "# + members_list[request.form['email']]['name'] + " is in trouble! You can find " + members_list[request.form['email']]['name'] + " here: " + location
     print bod
-      client.messages.create(to=members_list[notification[4]]['user_number'], from_="+12674158806", body="An escort has been sent to your location")
+    #client.messages.create(to=members_list[notification[4]]['user_number'], from_="+12674158806", body="An escort has been sent to your location")
     print "********** 9"
   else:
     new_notification['message'] = "An escort has been requested"
