@@ -8,14 +8,12 @@ app = Flask(__name__)
 
 #eventually change this to use os for the sake of security
 # add requirements to a textfile
-#sdb = boto.connect_sdb(os.environ['AWS_ACCESS_KEY_ID'], os.environ['AWS_SECRET_ACCESS_KEY'])
-client = TwilioRestClient('AC50b13c1520eb7ca26e4f990ac06c87c1', '172043bac8753857dbccd9a3bfcd53b8')
-sdb = boto.connect_sdb('AKIAJBNJELBDD3IWJ4WA', 'sgdE8okP2+u9tp1IFZlHaevDuScp4MfWy6glICkW')
+sdb = boto.connect_sdb(os.environ['AWS_ACCESS_KEY_ID'], os.environ['AWS_SECRET_ACCESS_KEY'])
+client = TwilioRestClient(os.environ['TWILIO_KEY'], os.environ['TWILIO_SECRET'])
 members = sdb.get_domain('members')
 notifications = sdb.get_domain('notifications')
 members_list = {}
 notifications_list = []
-#client = TwilioRestClient(os.environ['TWILIO_KEY'], os.environ['TWILIO_SECRET'])
 
 
 
@@ -59,19 +57,32 @@ def add_member():
 #when a timer goes off a notification is added to the database
 @app.route('/addnotification', methods=['POST'])
 def add_notification():
+  print "********** 1"
   new_notification = notifications.new_item(request.form['email'])
+  print "********** 2"
   new_notification['latitude'] = request.form['latitude']
+  print "********** 3"
   new_notification['longitude'] = request.form['longitude']
+  print "********** 4"
   new_notification['type'] = request.form['type']
+  print "********** 5"
   if request.form['type'] == 'timer':
+    print "********** 6"
     new_notification['message'] = "A timer has gone off!"
+    print "********** 7"
     location = "http://maps.google.com/?ie=UTF8&q=Emergency+Location@" + new_notification['latitude'] + "," + new_notification['longitude']
+    print "********** 8"
     client.messages.create(to="+12672374105", from_="+12674158806", body="SafetyPenn Alert! " + members_list[request.form['email']]['name'] + " is in trouble! You can find " + members_list[request.form['email']]['name'] + " here: " + location)
+    print "********** 9"
   else:
     new_notification['message'] = "An escort has been requested"
+  print "********** 10"
   new_notification.save()
+  print "********** 11"
   notification = [new_notification['latitude'], new_notification['longitude'], members_list[request.form['email']], new_notification['message'], request.form['type']]
+  print "********** 12"
   notifications_list.append(notification)
+  print "********** 13"
   return redirect(url_for('home'))
 
 @app.route('/remove')
