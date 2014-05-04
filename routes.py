@@ -81,7 +81,7 @@ def add_notification():
   else:
     new_notification['message'] = "An escort has been requested"
   print "********** 10"
-  new_notification.save(
+  new_notification.save()
   print "********** 11"
   notification = [new_notification['latitude'], new_notification['longitude'], members_list[request.form['email']], new_notification['message'], request.form['type']]
   print "********** 12"
