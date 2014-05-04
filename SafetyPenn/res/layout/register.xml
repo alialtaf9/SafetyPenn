@@ -63,6 +63,33 @@
                 android:layout_marginTop="5dip"
                 android:singleLine="true"
                 android:password="true"/>
+          <!--  Phone Number -->
+          <TextView android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#372c24"
+                android:text="Your Phone Number"/>
+          <EditText
+              android:id="@+id/phonenumber"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginBottom="20dip"
+              android:layout_marginTop="5dip"
+              android:inputType="number"
+              android:singleLine="true" />
+          <!--  Emergency Contact -->
+          <TextView android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#372c24"
+                android:text="Emergency Contact Phone Number"/>
+          <EditText
+              android:id="@+id/emergencycontact"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginBottom="20dip"
+              android:layout_marginTop="5dip"
+              android:inputType="number"
+              android:singleLine="true" />
+
           <!--  Gender -->
           <TextView android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -76,7 +103,7 @@
 		        android:layout_height="wrap_content"/>
 
           <!--  Eye Color -->
-          <!--
+
           <TextView android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:textColor="#372c24"
@@ -87,9 +114,9 @@
                 android:layout_marginBottom="20dip"
 		        android:layout_width="fill_parent"
 		        android:layout_height="wrap_content"/>
-		  -->
+
           <!--  Hair Color -->
-          <!--
+
           <TextView android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:textColor="#372c24"
@@ -100,21 +127,62 @@
                 android:layout_marginBottom="20dip"
 		        android:layout_width="fill_parent"
 		        android:layout_height="wrap_content"/>
-		  -->
+          
+          <TextView android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#372c24"
+                android:text="Height and Weight"/>
+          
+          <LinearLayout
+          android:orientation="horizontal"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:padding="10dip">
+          
+          <EditText
+              android:id="@+id/height"
+              android:layout_width="60dip"
+              android:layout_height="wrap_content"
+              android:layout_marginBottom="20dip"
+              android:layout_marginTop="5dip"
+              android:inputType="number"
+              android:singleLine="true" />
+          
+          <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#372c24"
+                android:text="inches"
+                android:layout_marginRight="20dip"/>
+          
+          <EditText
+              android:id="@+id/weight"
+              android:layout_width="60dip"
+              android:layout_height="wrap_content"
+              android:layout_marginBottom="20dip"
+              android:layout_marginTop="5dip"
+              android:inputType="number"
+              android:singleLine="true" />
+          
+          <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#372c24"
+                android:text="pounds"/>
+          
+          </LinearLayout>
+
           <!--  Picture Upload -->
-          <ImageView
-		        android:id="@+id/uploadImage"
-		        android:layout_width="match_parent"
-		        android:layout_marginTop="5dip"
-		        android:layout_height="wrap_content"
-		        android:adjustViewBounds="true" />
 	      <Button
 		        android:id="@+id/selectImageButton"
 		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content"
 		        android:layout_marginTop="15dp"
-		        android:background="@null"
-		        android:text="Select Image" />
+		        android:text="Choose Profile Photo" />
+	      <ImageView
+		        android:id="@+id/uploadImage"
+		        android:layout_width="match_parent"
+		        android:layout_marginTop="5dip"
+		        android:layout_height="wrap_content"
+		        android:adjustViewBounds="true" />
           <!--  Error message -->
           <TextView android:id="@+id/register_error"
                 android:layout_width="fill_parent"

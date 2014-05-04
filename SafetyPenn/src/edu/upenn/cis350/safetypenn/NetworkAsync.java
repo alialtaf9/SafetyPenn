@@ -6,13 +6,14 @@ import android.os.AsyncTask;
 
 public abstract class NetworkAsync extends AsyncTask<String, Void, JSONObject> {
 	protected JSONParser jsonParser;
-	protected static String URL = "http://54.85.175.45/RequestHandler.php";
+	protected static String URL = "http://54.85.24.39/RequestHandler.php";
 	protected String email;
 	protected static String loginTag = "login";
 	protected static String registerTag = "register";
 	protected static String timerTurnedOffTag = "timerTurnedOff";
 	protected static String timerSetTag = "timerSet";
 	protected static String timerCriticalTag = "timerCritical";
+	protected static String escortTag = "escort";
 	
 	public NetworkAsync(String email)  {
 		this.email = email;

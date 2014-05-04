@@ -17,56 +17,49 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import android.app.Activity;
-import android.content.Context;
+import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
 import android.location.Address;
-import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.view.Gravity;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
+import android.widget.NumberPicker;
+import android.widget.NumberPicker.OnValueChangeListener;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
+import android.view.KeyEvent;
 
-public class DashboardActivity extends FragmentActivity implements LocationListener, OnMarkerDragListener {
+public class DashboardActivity extends FragmentActivity implements LocationListener, OnMarkerDragListener{
 	private GoogleMap googleMap;
 	private LocationManager locationManager;
 	Timer timer;
 	UserFunctions userFunctions;
 	Button btnLogout;
+	Button btnEditSettings;
+	Button btnRequestEscort;
 	Button btnTimer;
-	Button btnTimerStart;
-	TextView timerDisplay;
 	private static String KEY_SUCCESS = "success";
 	boolean timerStart = false;
-	private final long interval = 1 * 1000;
-	private final long startTime = 10 * 1000;
 	private final DashboardActivity currentActivity = this;
-	private PopupWindow popup;
 	private String  userEmail;
 	private double latitude;
 	private double longitude;
 	private int timerLength;
+	static Dialog timerSetDialog;
 	private Location myLocation;
 	private EditText startAddrText;
 	private EditText endAddrText;
@@ -74,11 +67,7 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		/**
-		 * Dashboard Screen for the application
-		 * */       
+		super.onCreate(savedInstanceState);       
 		// Check login status in database
 		userFunctions = new UserFunctions();
 		if(userFunctions.isUserLoggedIn(getApplicationContext())){
@@ -89,21 +78,66 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 			DatabaseOperations db = new DatabaseOperations(getApplicationContext());
 			HashMap<String, String> userDetails = db.getUserDetails();
 			userEmail = userDetails.get("email");
+			
 			/****
 			 * Using Dummy variables right now.
-			 * timerEnded needs to be passed longitude, latitude, and length of timer
 			 * 
 			 * 
 			 */
 			latitude = 0;
 			longitude = 0;
-			timerLength = 0;
+			
+			timerSetDialog = new Dialog(DashboardActivity.this);
+			timerSetDialog.setContentView(R.layout.timersetdialog);
+	        Button setTimerButton = (Button) timerSetDialog.findViewById(R.id.setTimerButton);
+	        Button cancelButton = (Button) timerSetDialog.findViewById(R.id.cancelButton);
+	        final NumberPicker np = (NumberPicker) timerSetDialog.findViewById(R.id.numberPicker);
+	        np.setMaxValue(120);
+	        np.setMinValue(0);
+	        np.setWrapSelectorWheel(false);
+	        np.setOnValueChangedListener(new OnValueChangeListener()
+	        {
+	        	@Override
+	            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
 
+	                 timerLength = newVal * 60;
+
+	             }
+	        });
+	        setTimerButton.setOnClickListener(new OnClickListener()
+	         {
+	          @Override
+	          public void onClick(View v) {
+	              setTimer();
+	              timerSetDialog.dismiss();
+	           }    
+	          });
+	        cancelButton.setOnClickListener(new OnClickListener()
+	         {
+	          @Override
+	          public void onClick(View v) {
+	              timerSetDialog.dismiss();
+	           }    
+	          });
+
+			btnEditSettings = (Button) findViewById(R.id.btnEditSettings);
 			btnLogout = (Button) findViewById(R.id.btnLogout);
 			btnTimer = (Button) findViewById(R.id.btnTimer);
+			btnRequestEscort = (Button) findViewById(R.id.btnRequestEscort);
+			
+			btnEditSettings.setOnClickListener(new View.OnClickListener() {
+
+				public void onClick(View arg0) {
+					Intent editSettings = new Intent(getApplicationContext(), EditSettingsActivity.class);
+					editSettings.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					startActivity(editSettings);
+				}
+			});
+			
 			btnLogout.setOnClickListener(new View.OnClickListener() {
 
 				public void onClick(View arg0) {
+					// TODO Auto-generated method stub
 					userFunctions.logoutUser(getApplicationContext());
 					Intent login = new Intent(getApplicationContext(), LoginActivity.class);
 					login.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -121,6 +155,13 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 					openContextMenu(btnTimer);
 				}
 			});
+			
+			btnRequestEscort.setOnClickListener(new View.OnClickListener() {
+
+				public void onClick(View arg0) {
+					handleEscortRequest();
+				}
+			});
 
 		}else{
 			// user is not logged in show login screen
@@ -131,281 +172,306 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 			finish();
 		}        
 	}
+	
+	public void handleEscortRequest() {
+    	System.out.println("Handle escort request.");
+		JSONObject json = userFunctions.escortRequest(userEmail, latitude, longitude);
+		
+		try {
+            //Timer information successfully sent to server 
+			if (json.getString(KEY_SUCCESS) != null) {
+				Toast.makeText(this, "An escort has been requested.", Toast.LENGTH_SHORT).show();
+            	
+            }
+			else{
+                // Error 
+				Toast.makeText(this, "An error occurred.", Toast.LENGTH_SHORT).show();
+            }
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			Toast.makeText(this, "An error occurred.", Toast.LENGTH_SHORT).show();
+		}
+    	
+    }
 
 	/******************************************
 	 * 			TIMER HANDLING
 	 ******************************************/
+	
+	public void setTimer() {
+		if(timerStart == false) {
+			//User just started timer
+			timerStart = true;
+			timer = new Timer(timerLength * 1000, 1000, btnTimer, currentActivity);
+			timer.start();
+			userFunctions.timerEnded(userEmail, latitude, longitude);
+			btnTimer.setOnClickListener(new View.OnClickListener() {
 
-	private void showTimerPopup(final Activity context) {
-		int popupWidth = 480;
-		int popupHeight = 800;
-		LinearLayout viewGroup = (LinearLayout) context.findViewById(R.id.timer_popup);
-		LayoutInflater layoutInflater = (LayoutInflater) context
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View layout = layoutInflater.inflate(R.layout.timer, viewGroup);
-
-		popup = new PopupWindow(context);
-		popup.setContentView(layout);
-		popup.setWidth(popupWidth);
-		popup.setHeight(popupHeight);
-		popup.setFocusable(true);
-		popup.setBackgroundDrawable(new BitmapDrawable());
-		popup.showAtLocation(layout, Gravity.CENTER, 0, 0);
-		//Show timer
-		// TODO: Access database to get user preferences
-		timerDisplay = (TextView) layout.findViewById(R.id.timer_display);
-		timerDisplay.setText(String.valueOf(startTime / 1000));
-		btnTimer = (Button) findViewById(R.id.btnTimer);
-		btnTimerStart = (Button) layout.findViewById(R.id.timer_button);
-		btnTimerStart.setOnClickListener(new View.OnClickListener() {
-
-			public void onClick(View arg0) {
-				if(timerStart == false) {
-					//User just started timer
-					timerStart = true;
-					timer = new Timer(startTime, interval, timerDisplay, currentActivity);
-					timer.start();
-					btnTimerStart.setBackgroundColor(getResources().getColor(R.color.end_red));
-					btnTimerStart.setText("Stop");
-					userFunctions.timerEnded(userEmail, latitude, longitude, timerLength);
+				public void onClick(View arg0) {
+					setTimer();
 				}
-				//User stopped timer, close popup
-				else {
-					timerStart = false;
-					timer.cancel();
-					popup.dismiss();
-					userFunctions.timerShutOff(userEmail, latitude, longitude, timerLength);
-				}
-
-			}
-		});
-	}
-
-	//After timer goes off, this method is called
-	public void handleTimerCritical() {
-		System.out.println("Handle timer critical");
-
-		JSONObject json = userFunctions.timerEnded(userEmail, latitude, longitude, timerLength);
-
-		try {
-			//Timer information successfully sent to server 
-			if (json.getString(KEY_SUCCESS) != null) {
-				Toast.makeText(this, "Campus police are being notified.", Toast.LENGTH_SHORT).show();
-				timerDisplay.setText("!!!");
-				timerStart = true;
-				btnTimerStart.setText("Close");
-
-			}
-			else{
-				// Error 
-				timerDisplay.setText("Error occured.");
-			}
+			});
 		}
-		catch(JSONException e) {
-			e.printStackTrace();
-		}
+		//User stopped timer, close popup
+		else {
+			timerStart = false;
+			timer.cancel();
+			btnTimer.setText("Timer");
+			btnTimer.setOnClickListener(new View.OnClickListener() {
 
-	}
-
-	// Set timer based on calculated time to destination
-	private void showDestinationPicker(final Activity context) {	
-		// show address fields
-		LinearLayout startAddrView = (LinearLayout) findViewById(R.id.startAddress_field);
-		LinearLayout endAddrView = (LinearLayout) findViewById(R.id.endAddress_field);
-		startAddrView.setVisibility(View.VISIBLE);
-		endAddrView.setVisibility(View.VISIBLE);
-
-		if (locationManager == null) {
-			Toast.makeText(this, "Could not find current location! Please enter the address of your location.", Toast.LENGTH_LONG).show();
-		} else {
-			Toast.makeText(this, "Move pin to set start location, or input address manually.", Toast.LENGTH_LONG).show();
-
-			// drop draggable pin on user's current location
-			double pinLatitude = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLatitude();
-			double pinLongitude = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLongitude();
-			LatLng pinLatLng = new LatLng(pinLatitude, pinLongitude);
-			googleMap.addMarker(new MarkerOptions()
-			.position(pinLatLng)
-			.title("Current Location")
-			.draggable(true));
-
-			// zoom camera to pin location
-			googleMap.moveCamera(CameraUpdateFactory.newLatLng(pinLatLng));
-			googleMap.animateCamera(CameraUpdateFactory.zoomTo(16));
-
-			// create access for address fields
-			startAddrText = (EditText) findViewById(R.id.startAddress_text);
-			endAddrText = (EditText) findViewById(R.id.endAddress_text);
-
-
-			// create Geocoder to find address info of current location
-			gc = new Geocoder(context, Locale.getDefault());
-			List<Address> addresses = null;
-			try {
-				addresses = gc.getFromLocation(pinLatitude, pinLongitude, 1);
-			} catch (IOException e) {
-				Toast.makeText(this, "Could not find current location! Please enter the address of your location.", Toast.LENGTH_LONG).show();
-			}
-			if (addresses != null) {
-				// Find address info and set the start address text view
-				String address = addresses.get(0).getAddressLine(0);
-				String city = addresses.get(0).getAddressLine(1);
-				startAddrText.setText(address + ", " + city);
-			}
-
-			// calculate time needed to get to destination
-			endAddrText.setOnEditorActionListener(new OnEditorActionListener() {
-				@Override
-				public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-					if (actionId == EditorInfo.IME_ACTION_DONE) {
-						setupEstimateTimer(context);
-
-					}	
-					return false;
+				public void onClick(View arg0) {
+					//showTimerPopup(DashboardActivity.this);
+					registerForContextMenu(btnTimer);
+					openContextMenu(btnTimer);
 				}
 			});
 		}
 
 	}
+	
+	//After timer goes off, this method is called
+	public void handleTimerCritical() {
+		System.out.println("Handle timer critical");
+		
+		btnTimer.setText("Timer");
+		timerStart = false;
+		
+		btnTimer.setOnClickListener(new View.OnClickListener() {
 
-	private void setupEstimateTimer(final Activity context) {
-		// create Address classes from user input
-		List<Address> startAddr = null;
-		List<Address> endAddr = null;
+			public void onClick(View arg0) {
+				//showTimerPopup(DashboardActivity.this);
+				registerForContextMenu(btnTimer);
+				openContextMenu(btnTimer);
+			}
+		});
+
+		JSONObject json = userFunctions.timerEnded(userEmail, latitude, longitude);
+
 		try {
-			startAddr = gc.getFromLocationName(startAddrText.getText().toString(), 1);
-			endAddr = gc.getFromLocationName(endAddrText.getText().toString(), 1);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			//Timer information successfully sent to server 
+			if (json.getString(KEY_SUCCESS) != null) {
+				Toast.makeText(this, "Campus police are being notified.", Toast.LENGTH_SHORT).show();
+			}
+			else{
+				// Error 
+				Toast.makeText(this, "An error occurred.", Toast.LENGTH_SHORT).show();
+			}
+		}
+		catch(Exception e) {
 			e.printStackTrace();
+			Toast.makeText(this, "An error occurred.", Toast.LENGTH_SHORT).show();
 		}
 
-		// convert addresses into lat/long
-		boolean startAddrValid = true;
-		boolean endAddrValid = true;
-		double startLat = 0;
-		double startLong = 0;
-		double endLat = 0;
-		double endLong = 0;
-		// find coordinates for start address
-		try {
-			if (startAddr != null && endAddr != null) {
-				startLat = startAddr.get(0).getLatitude();
-				startLong = startAddr.get(0).getLongitude();
-			}
-		} catch (IllegalStateException e) {
-			startAddrValid = false;
-			Toast.makeText(context, "Start address not valid! Please re-enter.", Toast.LENGTH_SHORT).show();
-		}
-
-		// find coordinates for end address
-		try {
-			endLat = endAddr.get(0).getLatitude();
-			endLong = endAddr.get(0).getLongitude();
-			System.out.println(endLat + ", " + endLong);
-		} catch (IllegalStateException e) {
-			endAddrValid = false;
-			Toast.makeText(context, "End address not valid! Please re-enter.", Toast.LENGTH_SHORT).show();
-		}
-
-		// set up timer with estimated time
-		if (startAddrValid && endAddrValid) {
-			// calculates distance in meters between two locations
-			float[] results = new float[10];
-			Location.distanceBetween(startLat, startLong, endLat, endLong, results);
-			int timeEstimate = ((int) (results[0]/1.39)) + 1;
-
-			// hide address fields
-			startAddrText.setVisibility(View.GONE);
-			endAddrText.setVisibility(View.GONE);
-			startAddrText.setFocusable(false);
-			endAddrText.setFocusable(false);
-
-			// create string to display in popup
-			StringBuilder popupMessage = new StringBuilder("Estimated time: ");
-			if (timeEstimate > 60) {
-				int minutes = timeEstimate / 60;
-				int seconds = timeEstimate % 60;
-				if (seconds == 0) {
-					popupMessage.append(minutes + " min");
-				} else {
-					popupMessage.append(minutes + " minutes, " + seconds + " seconds");
-				}
-			} else {
-				popupMessage.append(timeEstimate + " seconds");
-			}
-						
-			// add timer estimate to textview and make it visible
-			LinearLayout popupLL = (LinearLayout) findViewById(R.id.timerEst_popup);
-			TextView popupTV = (TextView) findViewById(R.id.timerEst_text);
-			popupTV.setText(popupMessage);
-			popupLL.setVisibility(View.VISIBLE);
-		}
 	}
+	
+	// Set timer based on calculated time to destination
+		private void showDestinationPicker(final Activity context) {	
+			// show address fields
+			LinearLayout startAddrView = (LinearLayout) findViewById(R.id.startAddress_field);
+			LinearLayout endAddrView = (LinearLayout) findViewById(R.id.endAddress_field);
+			startAddrView.setVisibility(View.VISIBLE);
+			endAddrView.setVisibility(View.VISIBLE);
+
+			if (locationManager == null) {
+				Toast.makeText(this, "Could not find current location! Please enter the address of your location.", Toast.LENGTH_LONG).show();
+			} else {
+				Toast.makeText(this, "Move pin to set start location, or input address manually.", Toast.LENGTH_LONG).show();
+
+				double pinLatitude = Double.MIN_VALUE;
+				double pinLongitude = Double.MIN_VALUE;
+				
+				try {
+					// drop draggable pin on user's current location
+					pinLatitude = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLatitude();
+					pinLongitude = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLongitude();
+				} catch (NullPointerException e) {
+					Toast.makeText(this, "Could not find current location! Please turn on Location Services to use this app.", Toast.LENGTH_LONG).show();
+				}
+				
+				LatLng pinLatLng = new LatLng(pinLatitude, pinLongitude);
+				googleMap.addMarker(new MarkerOptions()
+				.position(pinLatLng)
+				.title("Current Location")
+				.draggable(true));
+
+				// zoom camera to pin location
+				googleMap.moveCamera(CameraUpdateFactory.newLatLng(pinLatLng));
+				googleMap.animateCamera(CameraUpdateFactory.zoomTo(16));
+
+				// create access for address fields
+				startAddrText = (EditText) findViewById(R.id.startAddress_text);
+				endAddrText = (EditText) findViewById(R.id.endAddress_text);
+
+
+				// create Geocoder to find address info of current location
+				gc = new Geocoder(context, Locale.getDefault());
+				List<Address> addresses = null;
+				try {
+					addresses = gc.getFromLocation(pinLatitude, pinLongitude, 1);
+				} catch (IOException e) {
+					Toast.makeText(this, "Could not find current location! Please enter the address of your location.", Toast.LENGTH_LONG).show();
+				}
+				if (addresses != null && !addresses.isEmpty()) {
+					// Find address info and set the start address text view
+					String address = addresses.get(0).getAddressLine(0);
+					String city = addresses.get(0).getAddressLine(1);
+					startAddrText.setText(address + ", " + city);
+				}
+
+				// calculate time needed to get to destination
+				endAddrText.setOnEditorActionListener(new OnEditorActionListener() {
+					@Override
+					public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+						if (actionId == EditorInfo.IME_ACTION_DONE) {
+							setupEstimateTimer(context);
+
+						}	
+						return false;
+					}
+				});
+			}
+
+		}
+
+		private void setupEstimateTimer(final Activity context) {
+			// create Address classes from user input
+			List<Address> startAddr = null;
+			List<Address> endAddr = null;
+			try {
+				startAddr = gc.getFromLocationName(startAddrText.getText().toString(), 1);
+				endAddr = gc.getFromLocationName(endAddrText.getText().toString(), 1);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			// convert addresses into lat/long
+			boolean startAddrValid = true;
+			boolean endAddrValid = true;
+			double startLat = 0;
+			double startLong = 0;
+			double endLat = 0;
+			double endLong = 0;
+			// find coordinates for start address
+			try {
+				if (startAddr != null && endAddr != null) {
+					startLat = startAddr.get(0).getLatitude();
+					startLong = startAddr.get(0).getLongitude();
+				}
+			} catch (IllegalStateException e) {
+				startAddrValid = false;
+				Toast.makeText(context, "Start address not valid! Please re-enter.", Toast.LENGTH_SHORT).show();
+			}
+
+			// find coordinates for end address
+			try {
+				endLat = endAddr.get(0).getLatitude();
+				endLong = endAddr.get(0).getLongitude();
+				System.out.println(endLat + ", " + endLong);
+			} catch (IllegalStateException e) {
+				endAddrValid = false;
+				Toast.makeText(context, "End address not valid! Please re-enter.", Toast.LENGTH_SHORT).show();
+			}
+
+			// set up timer with estimated time
+			if (startAddrValid && endAddrValid) {
+				// calculates distance in meters between two locations
+				float[] results = new float[10];
+				Location.distanceBetween(startLat, startLong, endLat, endLong, results);
+				int timeEstimate = ((int) (results[0]/1.39)) + 1;
+
+				// hide address fields
+				startAddrText.setVisibility(View.GONE);
+				endAddrText.setVisibility(View.GONE);
+				startAddrText.setFocusable(false);
+				endAddrText.setFocusable(false);
+
+				// create string to display in popup
+				StringBuilder popupMessage = new StringBuilder("Estimated time: ");
+				if (timeEstimate > 60) {
+					int minutes = timeEstimate / 60;
+					int seconds = timeEstimate % 60;
+					if (seconds == 0) {
+						popupMessage.append(minutes + " min");
+					} else {
+						popupMessage.append(minutes + " minutes, " + seconds + " seconds");
+					}
+				} else {
+					popupMessage.append(timeEstimate + " seconds");
+				}
+							
+				// add timer estimate to textview and make it visible
+				LinearLayout popupLL = (LinearLayout) findViewById(R.id.timerEst_popup);
+				TextView popupTV = (TextView) findViewById(R.id.timerEst_text);
+				popupTV.setText(popupMessage);
+				popupLL.setVisibility(View.VISIBLE);
+			}
+		}
 
 	/******************************************
 	 * 			MAP HANDLING
 	 ******************************************/
+	
+		// Set up map when needed
+		private void setUpMapIfNeeded() {
+			// Check if Google map is initiated
+			if (googleMap == null) {
+				googleMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+				// Make another check for map initiation
+				if (googleMap != null) {
+					// initialize map at penn
+					double pennLat = 39.9539;
+					double pennLong = -75.1930;
+					LatLng pennLatLng = new LatLng(pennLat, pennLong);
 
-	// Set up map when needed
-	private void setUpMapIfNeeded() {
-		// Check if Google map is initiated
-		if (googleMap == null) {
-			googleMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
-			// Make another check for map initiation
-			if (googleMap != null) {
-				// initialize map at penn
-				double pennLat = 39.9539;
-				double pennLong = -75.1930;
-				LatLng pennLatLng = new LatLng(pennLat, pennLong);
+					// Show current location in map, zoom appropriately, and place marker
+					googleMap.moveCamera(CameraUpdateFactory.newLatLng(pennLatLng));
+					googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
-				// Show current location in map, zoom appropriately, and place marker
-				googleMap.moveCamera(CameraUpdateFactory.newLatLng(pennLatLng));
-				googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+					// Set marker-drag listener
+					googleMap.setOnMarkerDragListener(this);
 
-				// Set marker-drag listener
-				googleMap.setOnMarkerDragListener(this);
-
-				setUpMap();
+					setUpMap();
+				}
 			}
 		}
-	}
 
-	private void setUpMap() {
-		// Enable MyLocation Layer
-		googleMap.setMyLocationEnabled(true);
-
-		// Get LocationManager
-		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 400, 1000, this);     
-
-		// checking for enabled gps
-		if (locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER) == null) {
-			Toast.makeText(this, "Not Connected to Current Location", Toast.LENGTH_SHORT).show();
-		} 
-	}
-
-	//}
-
-	@Override
-	public void onLocationChanged(Location myLocation) {
-		if (myLocation == null) {
-			Toast.makeText(this, "Not Connected to Current Location", Toast.LENGTH_SHORT).show();
-		} else {	
-
-			// Get latitude and longitutde of location and create a LatLng
-			double latitude = myLocation.getLatitude();
-			double longitude = myLocation.getLongitude();
-			LatLng latLng = new LatLng(latitude, longitude);
-
+		private void setUpMap() {
+			// Enable MyLocation Layer
 			googleMap.setMyLocationEnabled(true);
 
-			// Show current location in map, zoom appropriately, and place marker
-			googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-			googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+			// Get LocationManager
+			locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 400, 1000, this);     
+
+			// checking for enabled gps
+			if (locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER) == null) {
+				Toast.makeText(this, "Not Connected to Current Location", Toast.LENGTH_SHORT).show();
+			} 
 		}
-	}
+
+		//}
+
+		@Override
+		public void onLocationChanged(Location myLocation) {
+			if (myLocation == null) {
+				Toast.makeText(this, "Not Connected to Current Location", Toast.LENGTH_SHORT).show();
+			} else {	
+
+				// Get latitude and longitutde of location and create a LatLng
+				double latitude = myLocation.getLatitude();
+				double longitude = myLocation.getLongitude();
+				LatLng latLng = new LatLng(latitude, longitude);
+
+				googleMap.setMyLocationEnabled(true);
+
+				// Show current location in map, zoom appropriately, and place marker
+				googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+				googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+			}
+		}
 
 	@Override
 	public void onProviderDisabled(String arg0) {
@@ -427,14 +493,14 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 	 * 			SELECTING WHICH TIMER
 	 * 					TO USE
 	 ******************************************/	
-
+	
 	// Floating menu for selecting timer
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.timer_select, menu);
 		menu.setHeaderTitle("Select Timer");
 	}
-
+	
 	// Delegate handling of each selection of menu
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
@@ -447,15 +513,16 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 			showDestinationPicker(DashboardActivity.this);
 			return true;
 
-			// Option 2: user sets custom timer
+		// Option 2: user sets custom timer
 		case R.id.user_set_timer:
 			// Display timer pop-up
-			showTimerPopup(DashboardActivity.this);
+			timerSetDialog.show();
 			return true;
 		default:
 			return super.onContextItemSelected(item);
 		}
 	}
+	
 
 	/*****************************************************
 	 * 			MAP MARKER DRAGLISTENER

@@ -14,15 +14,12 @@ public class TimerAsync extends NetworkAsync {
 	//Location coordinates
 	private String lat;
 	private String lon;
-	//User's timer set length
-	private String length;
 
-	public TimerAsync(String email, String timerTag, double lat, double lon, int length) {
+	public TimerAsync(String email, String timerTag, double lat, double lon) {
 		super(email);
 		this.timerTag = timerTag;
 		this.lat = Double.toString(lat);
 		this.lon = Double.toString(lon);
-		this.length = Integer.toString(length);
 	}
 
 	@Override
@@ -34,7 +31,6 @@ public class TimerAsync extends NetworkAsync {
         params.add(new BasicNameValuePair("email", email));
         params.add(new BasicNameValuePair("lat", lat));
         params.add(new BasicNameValuePair("lon", lon));
-        params.add(new BasicNameValuePair("length", length));
         JSONObject json = jsonParser.getJSONFromUrl(URL, params);
         return json;
 	}

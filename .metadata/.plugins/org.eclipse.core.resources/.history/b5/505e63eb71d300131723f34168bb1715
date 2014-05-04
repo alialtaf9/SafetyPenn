@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dashboard_id"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="#ffffff"
+    android:gravity="bottom|center_horizontal"
+    android:orientation="vertical" >
+
+    <!-- Map Start -->
+
+
+    <!-- android:layout_height="343dip" -->
+
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <!-- Address Fields -->
+
+        <LinearLayout
+            android:id="@+id/startAddress_field"
+            android:layout_width="200dip"
+            android:layout_height="30dip"
+            android:layout_gravity="left|top"
+            android:layout_marginTop="13dip"
+            android:background="#E0ffffff"
+            android:orientation="horizontal"
+            android:visibility="gone" >
+
+            <EditText
+                android:id="@+id/startAddress_text"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:gravity="center_vertical"
+                android:text="start address"
+                android:textColor="#B0000000"
+                android:textSize="14dip"
+                android:layout_marginLeft="3dip"
+                android:singleLine="true"
+                android:imeOptions="actionNext" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/endAddress_field"
+            android:layout_width="200dip"
+            android:layout_height="30dip"
+            android:layout_gravity="left|top"
+            android:layout_marginTop="45dip"
+            android:background="#E0ffffff"
+            android:orientation="horizontal"
+            android:visibility="gone" >
+
+            <EditText
+                android:id="@+id/endAddress_text"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:gravity="center_vertical"
+                android:text="end address"
+                android:textColor="#B0000000"
+                android:textSize="14dip"
+                android:layout_marginLeft="3dip"
+                android:singleLine="true"
+                android:imeOptions="actionDone" />
+        </LinearLayout>
+
+        <!-- Timer button -->
+
+        <LinearLayout
+            android:layout_width="70dip"
+            android:layout_height="70dip"
+            android:layout_gravity="bottom|center"
+            android:layout_marginBottom="10dip"
+            android:orientation="vertical" >
+
+            <Button
+                android:id="@+id/btnTimer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/roundbackground"
+                android:gravity="center"
+                android:text="timer"
+                android:textColor="#B0000000"
+                android:textSize="14dip" />
+        </LinearLayout>
+
+        <!-- Logout button -->
+
+        <LinearLayout
+            android:layout_width="50dip"
+            android:layout_height="30dip"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="25dip"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <Button
+                android:id="@+id/btnLogout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#d5ffffff"
+                android:gravity="center"
+                android:text="logout"
+                android:textColor="#B0555555"
+                android:textSize="14dip" />
+        </LinearLayout>
+    </fragment>
+
+</LinearLayout>

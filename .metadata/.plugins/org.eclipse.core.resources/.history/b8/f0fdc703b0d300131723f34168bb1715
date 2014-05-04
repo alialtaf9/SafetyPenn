@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/timerEst_popup"
+    android:layout_width="match_parent"
+    android:layout_height="40dip"
+    android:background="#E0ffffff"
+    android:gravity="top"
+    android:orientation="vertical" >
+
+    <TextView>
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:graivty="center"
+        android:id="@+id/timerEst_text"
+                        android:textColor="#B0000000"
+        android:textSize="15dip"
+    </TextView>
+
+</LinearLayout>

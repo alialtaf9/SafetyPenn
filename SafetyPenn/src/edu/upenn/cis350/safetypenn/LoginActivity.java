@@ -1,10 +1,14 @@
 package edu.upenn.cis350.safetypenn;
 
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.JSONException;
 import org.json.JSONObject;
  
+
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,7 +30,6 @@ public class LoginActivity extends Activity {
     private static String KEY_SUCCESS = "success";
     private static String KEY_ERROR = "error";
     private static String KEY_ERROR_MSG = "error_msg";
-    private static String KEY_UID = "uid";
     private static String KEY_NAME = "name";
     private static String KEY_EMAIL = "email";
     private static String KEY_CREATED_AT = "created_at";
@@ -47,7 +50,6 @@ public class LoginActivity extends Activity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
  
             public void onClick(View view) {
-            	//Todo: Null handler
                 String email = inputEmail.getText().toString();
                 String password = inputPassword.getText().toString();
                 UserFunctions userFunction = new UserFunctions();
@@ -65,7 +67,7 @@ public class LoginActivity extends Activity {
                              
                             // Clear all previous data in database
                             userFunction.logoutUser(getApplicationContext());
-                            db.addUser(json_user.getString(KEY_NAME), json_user.getString(KEY_EMAIL), json.getString(KEY_UID));                        
+                            db.addUser(json_user.getString(KEY_NAME), json_user.getString(KEY_EMAIL));                        
                              
                             // Launch Dashboard Screen
                             Intent dashboard = new Intent(getApplicationContext(), DashboardActivity.class);
@@ -84,6 +86,9 @@ public class LoginActivity extends Activity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                catch (NullPointerException e) {
+                	loginErrorMsg.setText("Login Error");
+                }
             }
         });
  
@@ -98,4 +103,6 @@ public class LoginActivity extends Activity {
             }
         });
     }
+    
+
 }

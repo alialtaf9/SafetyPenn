@@ -21,10 +21,8 @@ public class DatabaseOperations extends SQLiteOpenHelper {
     private static final String TABLE_LOGIN = "login";
  
     // Login Table Columns names
-    private static final String KEY_ID = "id";
     private static final String KEY_NAME = "name";
     private static final String KEY_EMAIL = "email";
-    private static final String KEY_UID = "uid";
  
     public DatabaseOperations(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -34,9 +32,8 @@ public class DatabaseOperations extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_LOGIN_TABLE = "CREATE TABLE " + TABLE_LOGIN + "("
-                + KEY_ID + " INTEGER PRIMARY KEY,"
-                + KEY_NAME + " TEXT,"
-                + KEY_EMAIL + " TEXT UNIQUE" + ")";
+                + KEY_EMAIL + " TEXT PRIMARY KEY,"
+                + KEY_NAME + " TEXT," + ")";
         db.execSQL(CREATE_LOGIN_TABLE);
     }
  
@@ -53,11 +50,10 @@ public class DatabaseOperations extends SQLiteOpenHelper {
     /**
      * Storing user details in database
      * */
-    public void addUser(String name, String email, String uid) {
+    public void addUser(String name, String email) {
         SQLiteDatabase db = this.getWritableDatabase();
  
         ContentValues values = new ContentValues();
-        values.put(KEY_ID, uid); // id
         values.put(KEY_NAME, name); // Name
         values.put(KEY_EMAIL, email); // Email
         

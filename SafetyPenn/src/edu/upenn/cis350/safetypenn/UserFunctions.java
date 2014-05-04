@@ -7,8 +7,11 @@ import org.json.JSONObject;
  
 
 
+
+
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
  
 public class UserFunctions {
      
@@ -23,13 +26,12 @@ public class UserFunctions {
      * @param email
      * @param lat
      * @param lon
-     * @param length
      * */
     
-    public JSONObject timerEnded(String email, double lat, double lon, int length) {
+    public JSONObject timerEnded(String email, double lat, double lon) {
     	System.out.println("Creating thread");
     	String timerTag = NetworkAsync.timerCriticalTag;
-    	TimerAsync thread = new TimerAsync(email, timerTag, lat, lon, length);
+    	TimerAsync thread = new TimerAsync(email, timerTag, lat, lon);
     	System.out.println("Thread created");
     	JSONObject json = null;
     	try {
@@ -42,20 +44,17 @@ public class UserFunctions {
 		}
     	return json;    	
     }
-    
-    
+ 
     /**
-     * function Timer Started by User
+     * function Timer Ended- Critical
      * @param email
      * @param lat
      * @param lon
-     * @param length
      * */
     
-    public JSONObject timerSet(String email, double lat, double lon, int length) {
+    public JSONObject escortRequest(String email, double lat, double lon) {
     	System.out.println("Creating thread");
-    	String timerTag = NetworkAsync.timerSetTag;
-    	TimerAsync thread = new TimerAsync(email, timerTag, lat, lon, length);
+    	NetworkAsync thread = new EscortAsync(email, lat, lon);
     	System.out.println("Thread created");
     	JSONObject json = null;
     	try {
@@ -68,32 +67,6 @@ public class UserFunctions {
 		}
     	return json;    	
     }
-    
-    /**
-     * function Timer Shut off by User
-     * @param email
-     * @param lat
-     * @param lon
-     * @param length
-     * */
-    
-    public JSONObject timerShutOff(String email, double lat, double lon, int length) {
-    	System.out.println("Creating thread");
-    	String timerTag = NetworkAsync.timerTurnedOffTag;
-    	TimerAsync thread = new TimerAsync(email, timerTag, lat, lon, length);
-    	System.out.println("Thread created");
-    	JSONObject json = null;
-    	try {
-			json = thread.execute().get();
-		} catch (InterruptedException e) {
-			
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-		}
-    	return json;    	
-    }
-    
      
     /**
      * function make Login Request
@@ -121,10 +94,17 @@ public class UserFunctions {
      * @param name
      * @param email
      * @param password
+     * @param eye_color 
+     * @param hair_color 
+     * @param gender 
+     * @param weight 
+     * @param height 
+     * @param emergencyContact 
+     * @param phoneNumber 
      * */
-    public JSONObject registerUser(String name, String email, String password){
+    public JSONObject registerUser(String name, String email, String password, Bitmap bitmap, String filePath, String phoneNumber, String emergencyContact, String height, String weight, String gender, String hair_color, String eye_color){
     	System.out.println("Beginning user registration");
-    	RegisterAsync thread = new RegisterAsync(name, email, password);
+    	RegisterAsync thread = new RegisterAsync(name, email, password, bitmap, filePath, phoneNumber, emergencyContact, height, weight, gender, hair_color,eye_color);
     	System.out.println("Thread created");
     	JSONObject json = null;
     	try {
