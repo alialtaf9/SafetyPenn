@@ -7,5 +7,5 @@ Twisted==12.2.0
 Werkzeug==0.9.4
 boto==2.27.0
 gunicorn==18.0
-twilio=3.3.6
+twilio==3.3.6
 
