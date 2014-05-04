@@ -76,7 +76,7 @@ def add_notification():
     print "********** 8"
     bod = "SafetyPenn Alert! "# + members_list[request.form['email']]['name'] + " is in trouble! You can find " + members_list[request.form['email']]['name'] + " here: " + location
     print bod
-    client.messages.create(to="+12672374105", from_="+12674158806", body=bod)
+      client.messages.create(to=members_list[notification[4]]['user_number'], from_="+12674158806", body="An escort has been sent to your location")
     print "********** 9"
   else:
     new_notification['message'] = "An escort has been requested"
@@ -93,11 +93,14 @@ def add_notification():
 def remove_notification():
   print 'remove'
   id = request.args.get('id', '')
-  print id
+  print "id = " id
   for notification in notifications_list:
     if notification[4] == id:
+      print "found notification"
       if notification[5] == 'escort':
+        "print notification is escort"
         client.messages.create(to=members_list[notification[4]]['user_number'], from_="+12674158806", body="An escort has been sent to your location")
+        print "message sent"
       notifications_list.remove(notification)
   notifications.delete_item(notifications.get_item(id))
   return redirect(url_for('home'))
