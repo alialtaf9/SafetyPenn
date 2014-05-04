@@ -99,7 +99,7 @@ def remove_notification():
       print "found notification"
       if notification[5] == 'escort':
         print "print notification is escort"
-        client.messages.create(to=members_list[notification[4]]['user_number'], from_="+12674158806", body="An escort has been sent to your location")
+        client.messages.create(to="+12672374105", from_="+12674158806", body="An escort has been sent to your location")
         print "message sent"
       notifications_list.remove(notification)
   notifications.delete_item(notifications.get_item(id))
