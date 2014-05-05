@@ -65,7 +65,9 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 	{
 		@Override
 		public void onClick(View v) {
-			estTimerLL.setVisibility(View.GONE);
+			try {
+				estTimerLL.setVisibility(View.GONE);
+			} catch (NullPointerException e) {}
 			setTimer();
 		}    
 	};
@@ -88,14 +90,9 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 			HashMap<String, String> userDetails = db.getUserDetails();
 			userEmail = userDetails.get("email");
 
-			/****
-			 * Using Dummy variables right now.
-			 * 
-			 * 
-			 */
+			// Initialize global lat/long with 0
 			latitude = 0;
 			longitude = 0;
-
 
 			timerSetDialog = new Dialog(DashboardActivity.this);
 			timerSetDialog.setContentView(R.layout.timersetdialog);
@@ -103,7 +100,7 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 			Button cancelButton = (Button) timerSetDialog.findViewById(R.id.cancelButton);
 			final NumberPicker np = (NumberPicker) timerSetDialog.findViewById(R.id.numberPicker);
 			np.setMaxValue(120);
-			np.setMinValue(0);
+			np.setMinValue(1);
 			np.setWrapSelectorWheel(false);
 			np.setOnValueChangedListener(new OnValueChangeListener()
 			{
@@ -163,7 +160,15 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 			btnTimer.setOnClickListener(new View.OnClickListener() {
 
 				public void onClick(View arg0) {
-					//showTimerPopup(DashboardActivity.this);
+					// hide address fields
+					startAddrView.setVisibility(View.GONE);
+					endAddrView.setVisibility(View.GONE);
+					
+					// hide pin
+					if (myMarker != null) {
+						myMarker.remove();
+					}
+					
 					registerForContextMenu(btnTimer);
 					openContextMenu(btnTimer);
 				}
@@ -304,7 +309,7 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 
 			// zoom camera to pin location
 			googleMap.moveCamera(CameraUpdateFactory.newLatLng(pinLatLng));
-			googleMap.animateCamera(CameraUpdateFactory.zoomTo(16));
+			googleMap.animateCamera(CameraUpdateFactory.zoomTo(17));
 
 			// create access for address fields
 			startAddrText = (EditText) findViewById(R.id.startAddress_text);
@@ -490,8 +495,8 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 		} else {	
 
 			// Get latitude and longitutde of location and create a LatLng
-			double latitude = myLocation.getLatitude();
-			double longitude = myLocation.getLongitude();
+			latitude = myLocation.getLatitude();
+			longitude = myLocation.getLongitude();
 			LatLng latLng = new LatLng(latitude, longitude);
 
 			googleMap.setMyLocationEnabled(true);
@@ -532,9 +537,7 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 
 	// Delegate handling of each selection of menu
 	@Override
-	public boolean onContextItemSelected(MenuItem item) {
-		//AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-
+	public boolean onContextItemSelected(MenuItem item) {		
 		switch (item.getItemId()) {
 
 		// Option 1: let Google Maps estimate time
