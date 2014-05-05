@@ -88,6 +88,69 @@ public class UserFunctions {
 		}
     	return json;
     }
+    
+    /**
+     * function update picture
+     * @param email
+     * @param filepath
+     * */
+    public JSONObject updatePicture(String email, String filePath){
+    	System.out.println("Creating thread");
+    	UpdatePicAsync thread = new UpdatePicAsync(email, filePath);
+    	System.out.println("Thread created");
+    	JSONObject json = null;
+    	try {
+			json = thread.execute().get();
+		} catch (InterruptedException e) {
+			
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+		}
+    	return json;
+    }
+    
+    /**
+     * function update password
+     * @param email
+     * @param password
+     * */
+    public JSONObject updatePassword(String email, String password){
+    	System.out.println("Creating thread");
+    	UpdatePasswordAsync thread = new UpdatePasswordAsync(email, password);
+    	System.out.println("Thread created");
+    	JSONObject json = null;
+    	try {
+			json = thread.execute().get();
+		} catch (InterruptedException e) {
+			
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+		}
+    	return json;
+    }
+    
+    /**
+     * function update emergency contact
+     * @param email
+     * @param number
+     * */
+    public JSONObject updateEmergencyContact(String email, String number){
+    	System.out.println("Creating thread");
+    	UpdateContactAsync thread = new UpdateContactAsync(email, number);
+    	System.out.println("Thread created");
+    	JSONObject json = null;
+    	try {
+			json = thread.execute().get();
+		} catch (InterruptedException e) {
+			
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+		}
+    	return json;
+    }
      
     /**
      * function make Register Request

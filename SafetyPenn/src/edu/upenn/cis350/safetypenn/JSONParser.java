@@ -47,7 +47,6 @@ public class JSONParser {
 
     //MultiPart Entity for Pic Upload to Server
     //Will need to use this method instead of getJSONFromURL for registration
-    //Sigh.
     public JSONObject getJSONMultiPart(String url, String registerTag, Bitmap bitmap, String name, String email, String password, String filePath, String phoneNumber, String emergencyContact, String height, String weight, String gender, String hair_color, String eye_color) {
     	   try {
     		    HttpClient httpClient = new DefaultHttpClient();
@@ -73,6 +72,64 @@ public class JSONParser {
     		    entity.addPart("gender", new StringBody(gender, Charset.forName("UTF-8")));
     		    entity.addPart("hair_color", new StringBody(hair_color, Charset.forName("UTF-8")));
     		    entity.addPart("eye_color", new StringBody(eye_color, Charset.forName("UTF-8")));
+    		    entity.addPart("picture", cbFile);
+    		    httpPost.setEntity(entity);
+                System.out.println("Set entity");
+                HttpResponse httpResponse = httpClient.execute(httpPost);
+                HttpEntity httpEntity = httpResponse.getEntity();
+                is = httpEntity.getContent();
+                System.out.println("Received content");
+           } catch (UnsupportedEncodingException e) {
+               e.printStackTrace();
+           } catch (ClientProtocolException e) {
+               e.printStackTrace();
+           } catch (IOException e) {
+               e.printStackTrace();
+           }
+    	   
+           try {
+               BufferedReader reader = new BufferedReader(new InputStreamReader(
+                       is, "iso-8859-1"), 8);
+               StringBuilder sb = new StringBuilder();
+               String line = null;
+               while ((line = reader.readLine()) != null) {
+                   sb.append(line + "n");
+               }
+               is.close();
+               json = sb.toString();
+               Log.e("JSON", json);
+           } catch (Exception e) {
+               Log.e("Buffer Error", "Error converting result " + e.toString());
+           }
+    
+           // try parse the string to a JSON object
+           try {
+               jObj = new JSONObject(json);            
+           } catch (JSONException e) {
+               Log.e("JSON Parser", "Error parsing data " + e.toString());
+           }
+    
+           // return JSON String
+           return jObj;
+    }
+    
+    //MultiPart Entity for Pic Update
+    public JSONObject getJSONMultiPart(String url, String email, String filePath) {
+    	   try {
+    		    HttpClient httpClient = new DefaultHttpClient();
+    		    HttpPost httpPost = new HttpPost(url);
+
+    		    MultipartEntity entity = new MultipartEntity(
+    		      HttpMultipartMode.BROWSER_COMPATIBLE);
+
+/*    		    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    		    bitmap.compress(CompressFormat.JPEG, 100, bos);
+    		    byte[] data = bos.toByteArray();
+    		    String encodedImage = Base64.encodeToString(data, Base64.DEFAULT);*/
+    	        File file = new File(filePath);
+    	        FileBody cbFile = new FileBody(file);  
+    		    entity.addPart("tag", new StringBody(NetworkAsync.updatePicTag, Charset.forName("UTF-8")));
+    		    entity.addPart("email", new StringBody(email, Charset.forName("UTF-8")));
     		    entity.addPart("picture", cbFile);
     		    httpPost.setEntity(entity);
                 System.out.println("Set entity");

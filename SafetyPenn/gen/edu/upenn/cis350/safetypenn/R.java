@@ -395,6 +395,7 @@ containing a value of this type.
         /**  Location client code resources (prefix with location_client) 
          */
         public static final int location_client_powered_by_google=0x7f06001a;
+        public static final int start_address_text=0x7f060021;
         public static final int user_set_timer=0x7f06001f;
     }
     public static final class style {

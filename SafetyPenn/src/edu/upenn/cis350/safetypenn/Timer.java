@@ -26,7 +26,14 @@ public class Timer extends CountDownTimer{
 
 	@Override
 	public void onTick(long millisUntilFinished) {
-		display.setText("" + millisUntilFinished / 1000);
+		int seconds = (int)millisUntilFinished / 1000;
+		int minutes = seconds / 60;
+		seconds = seconds % 60;
+		String middle = ":";
+		if(seconds < 10) {
+			middle = ":0";
+		}
+		display.setText(minutes + middle + seconds);
 		
 	}
 	

@@ -47,7 +47,7 @@
                 android:gravity="center_horizontal"
                 android:textColor="#B0000000"
                 android:textSize="14dip"
-                android:text="Estimated Time" />
+                android:text="No Time Found" />
         </LinearLayout>
 
         <!-- Address Fields -->
@@ -71,7 +71,7 @@
                 android:imeOptions="actionNext"
                 android:padding="4dip"
                 android:singleLine="true"
-                android:text="start address"
+                android:hint="@string/start_address_text"
                 android:textColor="#B0000000"
                 android:textSize="14dip" />
         </LinearLayout>

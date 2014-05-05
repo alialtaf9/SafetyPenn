@@ -14,6 +14,9 @@ public abstract class NetworkAsync extends AsyncTask<String, Void, JSONObject> {
 	protected static String timerSetTag = "timerSet";
 	protected static String timerCriticalTag = "timerCritical";
 	protected static String escortTag = "escort";
+	protected static String updatePicTag = "updatePic";
+	protected static String updatePasswordTag = "updatePassword";
+	protected static String updateEmergencyContactTag = "updateEmergencyContact";
 	
 	public NetworkAsync(String email)  {
 		this.email = email;
