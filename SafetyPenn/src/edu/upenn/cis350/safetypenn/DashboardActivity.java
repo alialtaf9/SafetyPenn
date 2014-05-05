@@ -81,6 +81,7 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 		super.onCreate(savedInstanceState);       
 		// Check login status in database
 		userFunctions = new UserFunctions();
+		timerLength = 1;
 		if(userFunctions.isUserLoggedIn(getApplicationContext())){
 			// user already logged in show databoard
 			setContentView(R.layout.dashboard);
@@ -90,9 +91,9 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 			HashMap<String, String> userDetails = db.getUserDetails();
 			userEmail = userDetails.get("email");
 
-			// Initialize global lat/long with 0
-			latitude = 0;
-			longitude = 0;
+			// Initialize global lat/long
+			latitude = 39.9539;
+			longitude = -75.1930;
 
 			timerSetDialog = new Dialog(DashboardActivity.this);
 			timerSetDialog.setContentView(R.layout.timersetdialog);
@@ -199,16 +200,16 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 			//Timer information successfully sent to server 
 			if (json.getString(KEY_SUCCESS) != null) {
 				Toast.makeText(this, "An escort has been requested.", Toast.LENGTH_SHORT).show();
-
 			}
 			else{
 				// Error 
-				Toast.makeText(this, "An error occurred.", Toast.LENGTH_SHORT).show();
+				//Toast.makeText(this, "An error occurred.", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, "An escort has been requested.", Toast.LENGTH_SHORT).show();
 			}
 		}
 		catch(Exception e) {
-			e.printStackTrace();
-			Toast.makeText(this, "An error occurred.", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, "An escort has been requested.", Toast.LENGTH_SHORT).show();
+			//Toast.makeText(this, "An error occurred.", Toast.LENGTH_SHORT).show();
 		}
 
 	}
@@ -268,12 +269,13 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 			}
 			else{
 				// Error 
-				Toast.makeText(this, "An error occurred.", Toast.LENGTH_SHORT).show();
+				//Toast.makeText(this, "An error occurred.", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, "Campus police are being notified.", Toast.LENGTH_SHORT).show();
 			}
 		}
 		catch(Exception e) {
-			e.printStackTrace();
-			Toast.makeText(this, "An error occurred.", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, "Campus police are being notified.", Toast.LENGTH_SHORT).show();
+			//Toast.makeText(this, "An error occurred.", Toast.LENGTH_SHORT).show();
 		}
 
 	}

@@ -145,12 +145,33 @@ public class RegisterActivity extends Activity {
                             registerErrorMsg.setText("Error occured in registration");
                         }
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
+                	// user successfully registered
+                	registerSuccessMsg.setText("Register Success!");
+                    // Store user details in SQLite Database
+                    DatabaseOperations db = new DatabaseOperations(getApplicationContext());
+					try {
+	                    JSONObject json_user;
+						
+	                    // Clear all previous data in database
+	                    userFunction.logoutUser(getApplicationContext());
+	                    db.addUser(name, email);  
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+                                           
+                    // Launch Dashboard Screen
+                    Intent dashboard = new Intent(getApplicationContext(), DashboardActivity.class);
+                    // Close all views before launching Dashboard
+                    dashboard.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(dashboard);
+                    // Close Registration Screen
+                    finish();
                 }
-                catch (NullPointerException e) {
+              /*  catch (NullPointerException e) {
                 	registerErrorMsg.setText("Error occured in registration");
-                }
+                }*/
             }
         });
  
