@@ -35,7 +35,7 @@
         else color = 'http://maps.google.com/mapfiles/ms/icons/green-dot.png';
         var m = new google.maps.Marker({map: map, position: pos, icon: color});
         var infoWindow = new google.maps.InfoWindow({
-          content: '<div><IMG BORDER="0" ALIGN="Left" HEIGHT="100" WIDTH="100" SRC="' + info['picture'] + '"></div><div><table>' + '<tr><td>Name</td><td>' + info['name'] + '</td></tr>' + '<tr><td>Gender</td><td>' + info['gender'] + '</td></tr>'+ '<tr><td>Height</td><td>' + info['height'] + '</td></tr>'+ '<tr><td>Weight</td><td>' + info['weight'] + '</td></tr>'+ '<tr><td>Hair Color</td><td>' + info['hair_color'] + '</td></tr>'+ '<tr><td>Eye Color</td><td>' + info['eye_color'] + '</td></tr>'+'</table></div><div class="notification" id="' + coordinate[4] + '"><div class="remove"><button type="button">Resolved</button></div></div>'
+          content: '<div><IMG BORDER="0" ALIGN="Left" HEIGHT="100" WIDTH="100" SRC="' + info['picture'] + '"></div><div><table>' + '<tr><td>Name</td><td>' + info['name'] + '</td></tr>' + '<tr><td>Gender</td><td>' + info['gender'] + '</td></tr>'+ '<tr><td>Height </td><td>' + info['height'] + ' inches</td></tr>'+ '<tr><td>Weight </td><td>' + info['weight'] + ' pounds</td></tr>'+ '<tr><td>Hair Color </td><td> ' + info['hair_color'] + '</td></tr>'+ '<tr><td>Eye Color </td><td> ' + info['eye_color'] + '</td></tr>'+'</table></div><div class="notification" id="' + coordinate[4] + '"><div class="remove"><button type="button">Resolved</button></div></div>'
         });
         google.maps.event.addListener(m, 'click', function() {
           infoWindow.open(map,m);
@@ -73,9 +73,9 @@
         function refresh() {
           location.reload();
           console.log("fucking work");
-          setTimeout(refresh, 10000);
+          setTimeout(refresh, 15000);
         }
-        setTimeout(refresh, 10000);
+        setTimeout(refresh, 15000);
 
       });
     </script>
