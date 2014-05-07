@@ -34,6 +34,7 @@ heapPanel.col3=72
 heapPanel.col4=72
 heapPanel.col5=72
 heapPanel.col6=72
+lastImageSaveDir=/Users/Elliot/Desktop/SafetyPenn_shots
 logcat.view.colsize.Application=135
 logcat.view.colsize.Level=18
 logcat.view.colsize.PID=46
