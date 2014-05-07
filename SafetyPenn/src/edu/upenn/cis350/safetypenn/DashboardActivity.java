@@ -149,7 +149,6 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 			btnLogout.setOnClickListener(new View.OnClickListener() {
 
 				public void onClick(View arg0) {
-					// TODO Auto-generated method stub
 					userFunctions.logoutUser(getApplicationContext());
 					Intent login = new Intent(getApplicationContext(), LoginActivity.class);
 					login.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -515,14 +514,10 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 	}
 
 	@Override
-	public void onProviderEnabled(String arg0) {
-	}
+	public void onProviderEnabled(String arg0) {	}
 
 	@Override
-	public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
-		// TODO Auto-generated method stub
-
-	}
+	public void onStatusChanged(String arg0, int arg1, Bundle arg2) {	}
 
 
 	/******************************************
