@@ -58,6 +58,7 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 	private double longitude;
 	private int timerLength;
 	static Dialog timerSetDialog;
+	private NumberPicker np;
 	private EditText startAddrText;
 	private EditText endAddrText;
 	private Geocoder gc;
@@ -99,7 +100,7 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 			timerSetDialog.setContentView(R.layout.timersetdialog);
 			Button setTimerButton = (Button) timerSetDialog.findViewById(R.id.setTimerButton);
 			Button cancelButton = (Button) timerSetDialog.findViewById(R.id.cancelButton);
-			final NumberPicker np = (NumberPicker) timerSetDialog.findViewById(R.id.numberPicker);
+			np = (NumberPicker) timerSetDialog.findViewById(R.id.numberPicker);
 			np.setMaxValue(120);
 			np.setMinValue(1);
 			np.setWrapSelectorWheel(false);
@@ -427,12 +428,12 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 					int minutes = timeEstimate / 60;
 					int seconds = timeEstimate % 60;
 					if (seconds == 0) {
-						popupMessage.append(minutes + " min");
+						popupMessage.append(minutes + " minutes.");
 					} else {
-						popupMessage.append(minutes + " minutes, " + seconds + " seconds");
+						popupMessage.append(minutes + " minutes, " + seconds + " seconds.");
 					}
 				} else {
-					popupMessage.append(timeEstimate + " seconds");
+					popupMessage.append(timeEstimate + " seconds.");
 				}
 
 				// add timer estimate to textview and make it visible
@@ -549,6 +550,8 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 			// Option 2: user sets custom timer
 		case R.id.user_set_timer:
 			// Display timer pop-up
+			np.setValue(1);
+			timerLength = 60;
 			timerSetDialog.show();
 			return true;
 		default:
