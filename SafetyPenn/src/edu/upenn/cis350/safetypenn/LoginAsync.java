@@ -12,7 +12,6 @@ import android.util.Log;
 
 public class LoginAsync extends NetworkAsync {
 	private String password;
-    private static String URL = "http://54.85.175.45/RequestHandler.php";
 
 	//Login
 	public LoginAsync(String email, String password) {

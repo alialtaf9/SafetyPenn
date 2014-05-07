@@ -224,7 +224,6 @@ public class DashboardActivity extends FragmentActivity implements LocationListe
 			timerStart = true;
 			timer = new Timer(timerLength * 1000, 1000, btnTimer, currentActivity);
 			timer.start();
-			userFunctions.timerEnded(userEmail, latitude, longitude);
 			btnTimer.setOnClickListener(setTimerOnClickListener);
 		}
 		//User stopped timer, close popup
